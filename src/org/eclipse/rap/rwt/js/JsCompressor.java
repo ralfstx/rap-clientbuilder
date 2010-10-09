@@ -9,9 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
-
+import org.eclipse.swt.internal.widgets.displaykit.JsFilesList;
 import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.EvaluatorException;
 
@@ -42,7 +40,7 @@ public class JsCompressor {
       String message = "Javascript source directory not found: " + inputDir;
       throw new IllegalArgumentException( message );
     }
-    File[] inputFiles = findAllJsFiles( inputDir );
+    File[] inputFiles = getJsFilesList( inputDir );
     File outputFile = new File( projectDir, TARGET_JS_FILE );
     try {
       long start = System.currentTimeMillis();
@@ -53,6 +51,21 @@ public class JsCompressor {
     } catch( IOException e ) {
       throw new RuntimeException( "Failed to compress Javascript files", e );
     }
+  }
+
+  private static File[] getJsFilesList( File inputDir ) {
+    File[] inputFiles;
+    try {
+      String[] fileNames = JsFilesList.getFiles();
+      inputFiles = new File[ fileNames.length ];
+      for( int i = 0; i < inputFiles.length; i++ ) {
+        inputFiles[ i ] = new File( inputDir, fileNames[ i ] );
+      }
+    } catch( Exception e ) {
+      String message = "Failed to get JS files list from rwt.q07 project";
+      throw new RuntimeException( message, e );
+    }
+    return inputFiles;
   }
 
   private static void compressFiles( File[] inputFiles, File outputFile )
@@ -89,23 +102,6 @@ public class JsCompressor {
     } finally {
       inputReader.close();
     }
-  }
-
-  private static File[] findAllJsFiles( File inputDir ) {
-    List collectedFiles = new ArrayList();
-    File[] files = inputDir.listFiles();
-    for( int i = 0; i < files.length; i++ ) {
-      File file = files[ i ];
-      if( file.isDirectory() ) {
-        File[] foundFiles = findAllJsFiles( file );
-        for( int j = 0; j < foundFiles.length; j++ ) {
-          collectedFiles.add( foundFiles[ j ] );
-        }
-      } else if( file.getName().endsWith( ".js" ) ) {
-        collectedFiles.add( file );
-      }
-    }
-    return ( File[] )collectedFiles.toArray( new File[ collectedFiles.size() ] );
   }
 
   private static final class SystemErrorReporter implements ErrorReporter {

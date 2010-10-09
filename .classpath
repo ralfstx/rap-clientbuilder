@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="lib/yuicompressor-2.4.2.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.rap.rwt.q07"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
