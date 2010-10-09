@@ -2,11 +2,17 @@
 
 Usage:
 
-  Class JsCompressor has a main method that recursively collects all *.js files
-  in RWT_Q07/js/, compresses and concatenates them, and writes the resulting
-  file to RWT_Q07/resources/client.js.
+  Place this project into the same workspace as the org.eclipse.rap.rwt.q07
+  project. Use the included launch configuration to create a new client.js.
+
+What is does:
+
+  Class JsCompressor has a main method that reads JavaScript files from
+  RWT_Q07/js/, compresses and concatenates them, and writes the resulting
+  file to RWT_Q07/resources/client.js. Files are processed in the order
+  specified in QooxdooResourcesUtil#JAVASCRIPT_FILES.
   RWT_Q07 is the root directory of the project org.eclipse.rap.rwt.q07,
   the path must be passed as first parameter.
 
-YUI Compressor version 2.4.2 from:
+Includes YUI Compressor version 2.4.2 from:
   http://yuilibrary.com/downloads/#yuicompressor
