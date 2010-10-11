@@ -11,12 +11,15 @@ package org.eclipse.rap.rwt.js;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import org.eclipse.swt.internal.widgets.displaykit.JsFilesList;
 import org.mozilla.javascript.ErrorReporter;
@@ -53,8 +56,9 @@ public class JsCompressor {
     File outputFile = new File( projectDir, TARGET_JS_FILE );
     try {
       long start = System.currentTimeMillis();
-      compressFiles( inputFiles, outputFile );
+      String compressed = compressFiles( inputFiles );
       long time = System.currentTimeMillis() - start;
+      writeToFile( outputFile, compressed );
       int count = inputFiles.length;
       System.out.println( "Compressed " + count + " files in " + time + " ms" );
     } catch( IOException e ) {
@@ -77,39 +81,50 @@ public class JsCompressor {
     return inputFiles;
   }
 
-  private static void compressFiles( File[] inputFiles, File outputFile )
-    throws IOException
-  {
-    FileOutputStream outputStream = new FileOutputStream( outputFile );
-    Writer outputWriter = new OutputStreamWriter( outputStream, CHARSET );
-    try {
-      for( int i = 0; i < inputFiles.length; i++ ) {
-        File inputFile = inputFiles[ i ];
-        compressFile( inputFile, outputWriter );
-      }
-    } finally {
-      outputWriter.close();
+  private static String compressFiles( File[] inputFiles ) throws IOException {
+    StringBuffer buffer = new StringBuffer();
+    for( int i = 0; i < inputFiles.length; i++ ) {
+      File inputFile = inputFiles[ i ];
+      String result = compressFile( inputFile );
+      buffer.append( result );
+      buffer.append( "\n" );
+      System.out.println( inputFile.getAbsolutePath() + "\t" + result.length() );
     }
+    return buffer.toString();
   }
 
-  private static void compressFile( File inputFile, Writer outputWriter )
-    throws IOException
-  {
-    System.out.println( "Compressing file " + inputFile );
+  private static String compressFile( File inputFile ) throws IOException {
+    String result;
     InputStream inputStream = new FileInputStream( inputFile );
     Reader inputReader = new InputStreamReader( inputStream, CHARSET );
+    StringWriter stringWriter = new StringWriter();
     try {
       JavaScriptCompressor compressor = new JavaScriptCompressor( inputReader,
                                                                   REPORTER );
-      compressor.compress( outputWriter,
+      compressor.compress( stringWriter ,
                            -1,
                            true,
                            VERBOSE,
                            PRESERVE_ALL_SEMICOLONS,
                            DISABLE_OPTIMIZATIONS );
-      outputWriter.write( "\n" );
+      stringWriter.flush();
+      result = stringWriter.getBuffer().toString();
+      stringWriter.close();
     } finally {
       inputReader.close();
+    }
+    return result;
+  }
+
+  private static void writeToFile( File outputFile, String copmressed )
+    throws IOException
+  {
+    FileOutputStream outputStream = new FileOutputStream( outputFile );
+    Writer outputWriter = new OutputStreamWriter( outputStream, CHARSET );
+    try {
+      outputWriter.write( copmressed );
+    } finally {
+      outputWriter.close();
     }
   }
 
