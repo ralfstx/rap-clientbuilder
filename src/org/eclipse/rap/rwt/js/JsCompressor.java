@@ -11,7 +11,6 @@ package org.eclipse.rap.rwt.js;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,8 +18,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+
 import org.eclipse.swt.internal.widgets.displaykit.JsFilesList;
 import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.EvaluatorException;
@@ -61,6 +60,7 @@ public class JsCompressor {
       writeToFile( outputFile, compressed );
       int count = inputFiles.length;
       System.out.println( "Compressed " + count + " files in " + time + " ms" );
+      System.out.println( "Result size: " + compressed.length() + " bytes" );
     } catch( IOException e ) {
       throw new RuntimeException( "Failed to compress Javascript files", e );
     }
