@@ -436,10 +436,18 @@ public class JavaScriptCompressor {
         StringBuffer sb = new StringBuffer();
         for (int i = 0, L = s.length(); i < L; i++) {
             int c = s.charAt(i);
-            if (c == quotechar) {
+            if(c == '\n') {
+              sb.append("\\n");
+            } else if(c == '\r') {
+              sb.append("\\r");
+            } else if(c == '\t') {
+              sb.append("\\t");
+            } else {
+              if (c == quotechar) {
                 sb.append("\\");
+              }
+              sb.append((char) c);
             }
-            sb.append((char) c);
         }
 
         return sb.toString();
