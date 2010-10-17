@@ -7,7 +7,7 @@
  * Contributors:
  *   EclipseSource - initial API and implementation
  ******************************************************************************/
-package org.eclipse.rap.rwt.js;
+package org.eclipse.rap.clientbuilder;
 
 import java.io.File;
 import java.io.FileInputStream;
