@@ -5,3 +5,4 @@ Bundle-SymbolicName: com.eclipsesource.rap.clientbuilder
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: ECLIPSESOURCE
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Require-Bundle: org.mozilla.javascript;bundle-version="1.6.6"

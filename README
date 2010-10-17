@@ -14,9 +14,17 @@ What is does:
   RWT_Q07 is the root directory of the project org.eclipse.rap.rwt.q07,
   the path must be passed as first parameter.
 
-Includes YUI Compressor version 2.4.2 from:
+Requires:
+  Bundle org.mozilla.javascript from Orbit (Branch v1_6_6)
+  dev.eclipse.org:/cvsroot/tools/org.eclipse.orbit/org.mozilla.javascript
+
+Includes:
+  Code from YUI Compressor version 2.4.2 from:
   http://yuilibrary.com/downloads/#yuicompressor
 
 License:
-  All code is published under the EPL:
+  Code in package com.yahoo.platform.yui.compressor is licensed under the BSD
+  License: http://developer.yahoo.net/yui/license.txt
+
+  All other code in this project is licensed under the EPL:
   http://www.eclipse.org/legal/epl-v10.html
