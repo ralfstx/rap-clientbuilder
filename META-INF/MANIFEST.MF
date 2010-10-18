@@ -8,3 +8,4 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Require-Bundle: org.mozilla.javascript;bundle-version="1.6.6"
 Export-Package: com.yahoo.platform.yui.compressor,
  org.eclipse.rap.clientbuilder
+Import-Package: junit.framework;version="3.8.2"
