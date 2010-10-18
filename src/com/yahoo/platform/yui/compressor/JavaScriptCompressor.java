@@ -8,6 +8,7 @@
 
 package com.yahoo.platform.yui.compressor;
 
+import org.eclipse.rap.clientbuilder.CodeCleanupUtil;
 import org.mozilla.javascript.*;
 
 import java.io.IOException;
@@ -256,7 +257,7 @@ public class JavaScriptCompressor {
         return count;
     }
 
-    private static int printSourceString(String source, int offset, StringBuffer sb) {
+    static int printSourceString(String source, int offset, StringBuffer sb) {
         int length = source.charAt(offset);
         ++offset;
         if ((0x8000 & length) != 0) {
@@ -270,7 +271,7 @@ public class JavaScriptCompressor {
         return offset + length;
     }
 
-    private static int printSourceNumber(String source,
+    static int printSourceNumber(String source,
             int offset, StringBuffer sb) {
         double number = 0.0;
         char type = source.charAt(offset);
@@ -304,7 +305,7 @@ public class JavaScriptCompressor {
         return offset;
     }
 
-    private static ArrayList parse(Reader in, ErrorReporter reporter)
+    static ArrayList parse(Reader in, ErrorReporter reporter)
             throws IOException, EvaluatorException {
 
         CompilerEnvirons env = new CompilerEnvirons();
@@ -548,6 +549,7 @@ public class JavaScriptCompressor {
         this.munge = munge;
         this.verbose = verbose;
 
+        CodeCleanupUtil.removeDebugCode(this.tokens);
         processStringLiterals(this.tokens, !disableOptimizations);
 
         if (!disableOptimizations) {

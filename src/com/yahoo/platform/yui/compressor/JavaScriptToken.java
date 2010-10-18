@@ -18,11 +18,11 @@ public class JavaScriptToken {
         this.value = value;
     }
 
-    int getType() {
+    public int getType() {
         return type;
     }
 
-    String getValue() {
+    public String getValue() {
         return value;
     }
 }
