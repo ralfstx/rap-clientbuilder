@@ -19,12 +19,11 @@ import junit.framework.TestCase;
 
 import org.eclipse.rap.clientbuilder.CodeCleanupUtil;
 import org.mozilla.javascript.ErrorReporter;
-import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Token;
 
-public class RhinoTest extends TestCase {
+public class ParserTest extends TestCase {
 
-  static final ErrorReporter REPORTER = new SystemErrorReporter();
+  static final ErrorReporter REPORTER = new TestErrorReporter();
 
   public void testParseNumber() throws Exception {
     JavaScriptToken[] result = parse( "23.0" );
@@ -137,46 +136,6 @@ public class RhinoTest extends TestCase {
           System.out.println( "literal: " + litStr );
         break;
       }
-    }
-  }
-
-  private static final class SystemErrorReporter implements ErrorReporter {
-
-    public void warning( String message,
-                         String sourceName,
-                         int line,
-                         String lineSource,
-                         int lineOffset )
-    {
-      System.out.println( getMessage( "WARNING", message ) );
-    }
-
-    public void error( String message,
-                       String sourceName,
-                       int line,
-                       String lineSource,
-                       int lineOffset )
-    {
-      System.out.println( getMessage( "ERROR", message ) );
-    }
-
-    public EvaluatorException runtimeError( String message,
-                                            String sourceName,
-                                            int line,
-                                            String lineSource,
-                                            int lineOffset )
-    {
-      error( message, sourceName, line, lineSource, lineOffset );
-      return new EvaluatorException( message );
-    }
-
-    private String getMessage( String severity, String message ) {
-      StringBuffer result = new StringBuffer();
-      result.append( "\n[" );
-      result.append( severity );
-      result.append( "] " );
-      result.append( message );
-      return result.toString();
     }
   }
 }

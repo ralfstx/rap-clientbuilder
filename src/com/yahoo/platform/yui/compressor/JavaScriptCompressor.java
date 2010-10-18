@@ -443,6 +443,8 @@ public class JavaScriptCompressor {
               sb.append("\\r");
             } else if(c == '\t') {
               sb.append("\\t");
+            } else if(c == '\\') {
+              sb.append("\\\\");
             } else {
               if (c == quotechar) {
                 sb.append("\\");
