@@ -19,6 +19,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.List;
 
 import org.eclipse.swt.internal.widgets.displaykit.JsFilesList;
 import org.mozilla.javascript.ErrorReporter;
@@ -34,7 +35,11 @@ public class JsCompressor {
   private static final boolean PRESERVE_ALL_SEMICOLONS = false;
   private static final boolean DISABLE_OPTIMIZATIONS = false;
   private static final boolean VERBOSE = false;
+  private static final boolean CREATE_DEBUG_FILES
+    = "true".equals( System.getProperty( "jscompressor.debug" ) );
   private final static ErrorReporter REPORTER = new SystemErrorReporter();
+  
+  private static CodeCleanupRunner runner = new CodeCleanupRunner();
 
   public static void main( String[] args ) {
     if( args.length < 1 ) {
@@ -45,6 +50,12 @@ public class JsCompressor {
     if( !projectDir.exists() ) {
       String message = "Project directory not found: " + projectDir;
       throw new IllegalArgumentException( message );
+    }
+    if( CREATE_DEBUG_FILES ) {
+      File debugDir = new File( projectDir, "tmp" );
+      debugDir.mkdir();
+      System.out.println( "Creating debug files in " + debugDir );
+      runner.createDebugFilesIn( debugDir );
     }
     File inputDir = new File( projectDir, JS_SOURCE_DIR );
     if( !inputDir.exists() ) {
@@ -93,7 +104,7 @@ public class JsCompressor {
     return buffer.toString();
   }
 
-  private static String compressFile( File inputFile ) throws IOException {
+  private static String compressFile( final File inputFile ) throws IOException {
     String result;
     InputStream inputStream = new FileInputStream( inputFile );
     Reader inputReader = new InputStreamReader( inputStream, CHARSET );
@@ -101,6 +112,12 @@ public class JsCompressor {
     try {
       JavaScriptCompressor compressor = new JavaScriptCompressor( inputReader,
                                                                   REPORTER );
+      compressor.setCleanupCallback( new ICleanupCallback() {
+
+        public void cleanup( List tokens ) {
+          runner.cleanupFile( tokens, inputFile.getName() );
+        };
+      } );
       compressor.compress( stringWriter ,
                            -1,
                            true,

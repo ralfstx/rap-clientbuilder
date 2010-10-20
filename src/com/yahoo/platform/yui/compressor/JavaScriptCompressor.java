@@ -8,15 +8,26 @@
 
 package com.yahoo.platform.yui.compressor;
 
-import org.eclipse.rap.clientbuilder.CodeCleanupUtil;
-import org.mozilla.javascript.*;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.eclipse.rap.clientbuilder.ICleanupCallback;
+import org.mozilla.javascript.CompilerEnvirons;
+import org.mozilla.javascript.ErrorReporter;
+import org.mozilla.javascript.EvaluatorException;
+import org.mozilla.javascript.Parser;
+import org.mozilla.javascript.ScriptRuntime;
+import org.mozilla.javascript.Token;
 
 public class JavaScriptCompressor {
 
@@ -536,12 +547,17 @@ public class JavaScriptCompressor {
     private Stack scopes = new Stack();
     private ScriptOrFnScope globalScope = new ScriptOrFnScope(-1, null);
     private Hashtable indexedScopes = new Hashtable();
+    private ICleanupCallback cleanupCallback;
 
     public JavaScriptCompressor(Reader in, ErrorReporter reporter)
             throws IOException, EvaluatorException {
 
         this.logger = reporter;
         this.tokens = parse(in, reporter);
+    }
+    
+    public void setCleanupCallback( ICleanupCallback cleanupCallback ) {
+      this.cleanupCallback = cleanupCallback;
     }
 
     public void compress(Writer out, int linebreak, boolean munge, boolean verbose,
@@ -551,7 +567,9 @@ public class JavaScriptCompressor {
         this.munge = munge;
         this.verbose = verbose;
 
-        CodeCleanupUtil.removeDebugCode(this.tokens);
+        if( cleanupCallback != null ) {
+          cleanupCallback.cleanup( this.tokens );
+        }
         processStringLiterals(this.tokens, !disableOptimizations);
 
         if (!disableOptimizations) {
