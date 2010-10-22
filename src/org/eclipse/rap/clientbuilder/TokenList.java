@@ -15,11 +15,11 @@ import org.mozilla.javascript.Token;
 
 import com.yahoo.platform.yui.compressor.JavaScriptToken;
 
-public class TokenReader {
+public class TokenList {
 
   private final List tokens;
 
-  public TokenReader( List tokens ) {
+  public TokenList( List tokens ) {
     this.tokens = tokens;
   }
 
@@ -129,12 +129,18 @@ public class TokenReader {
     return tokens.size();
   }
 
-  public JavaScriptToken getToken( int i ) {
+  public JavaScriptToken getToken( int index ) {
     JavaScriptToken token = null;
-    if( i < tokens.size() ) {
-      token = ( JavaScriptToken )tokens.get( i );
+    if( index < tokens.size() ) {
+      token = ( JavaScriptToken )tokens.get( index );
     }
     return token;
+  }
+
+  public void removeToken( int index ) {
+    if( index < tokens.size() ) {
+      tokens.remove( index );
+    }
   }
 
   public static class TokenPattern {
@@ -145,7 +151,7 @@ public class TokenReader {
       this.matchers = matchers;
     }
 
-    public int read( TokenReader reader, int offset ) {
+    public int read( TokenList reader, int offset ) {
       boolean result = true;
       for( int i = 0; i < matchers.length && result; i++ ) {
         matchers[ i ].clear();

@@ -13,28 +13,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
-import org.eclipse.rap.clientbuilder.TokenReader.TokenMatcher;
+import org.eclipse.rap.clientbuilder.TokenList.TokenMatcher;
 
 public class CodeCleaner {
 
-  private static final String QX_ASPECTS = "qx.aspects";
-
-  private static final String QX_COMPATIBILITY = "qx.compatibility";
-
-  private static final String QX_DEBUG = "qx.debug";
-
-  private final TokenReader reader;
+  private final TokenList reader;
 
   private final Set tokensToRemove;
 
-  private final List tokens;
-
-  public CodeCleaner( List tokens ) {
-    this.tokens = tokens;
-    this.reader = new TokenReader( tokens );
+  public CodeCleaner( TokenList tokens ) {
+    this.reader = tokens;
     tokensToRemove = new HashSet();
   }
 
@@ -120,14 +110,14 @@ public class CodeCleaner {
     Collections.reverse( removeList );
     for( Iterator iterator = removeList.iterator(); iterator.hasNext(); ) {
       Integer index = ( Integer )iterator.next();
-      tokens.remove( index.intValue() );
+      reader.removeToken( index.intValue() );
     }
   }
 
   private static boolean canRemoveVariant( String variantName ) {
-    return QX_DEBUG.equals( variantName )
-    || QX_COMPATIBILITY.equals( variantName )
-    || QX_ASPECTS.equals( variantName );
+    return "qx.debug".equals( variantName )
+           || "qx.compatibility".equals( variantName )
+           || "qx.aspects".equals( variantName );
   }
 
   VariantConditional readVariantConditional( int offset ) {

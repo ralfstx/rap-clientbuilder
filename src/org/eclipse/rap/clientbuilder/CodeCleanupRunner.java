@@ -14,45 +14,57 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-public class CodeCleanupRunner {
+final class CodeCleanupRunner {
 
-  private File parentDirectory;
+  private File directoryForDebugFiles;
 
-  public void createDebugFilesIn( File parentDirectory ) {
-    this.parentDirectory = parentDirectory;
+  void createDebugFilesIn( File parentDirectory ) {
+    this.directoryForDebugFiles = parentDirectory;
   }
 
-  public void cleanupFile( List tokens, String fileName ) {
-    String origCode = null;
-    if( parentDirectory != null ) {
-      origCode = DebugTokenPrinter.printTokens( tokens );
+  void cleanupFile( List tokens, String fileName ) {
+    TokenList tokenList = new TokenList( tokens );
+    String originalCode = getCodeForDebugFile( tokenList );
+    doCleanup( tokenList );
+    String cleanedCode = getCodeForDebugFile( tokenList );
+    createDebugFiles( originalCode, cleanedCode, fileName );
+  }
+
+  private String getCodeForDebugFile( TokenList tokens ) {
+    String code = null;
+    if( directoryForDebugFiles != null ) {
+      code = JavaScriptPrinter.printTokens( tokens );
     }
+    return code;
+  }
+
+  private void doCleanup( TokenList tokens ) {
     CodeCleaner codeCleaner = new CodeCleaner( tokens );
     codeCleaner.removeVariantsCode();
-    if( parentDirectory != null ) {
-      String cleanedCode = DebugTokenPrinter.printTokens( tokens );
-      logDifferences( origCode, cleanedCode, fileName );
+  }
+
+  private void createDebugFiles( String origCode,
+                                 String cleanedCode,
+                                 String fileName )
+  {
+    if( directoryForDebugFiles != null
+        && origCode != null
+        && !origCode.equals( cleanedCode ) )
+    {
+      createDebugFile( "orig", fileName, origCode );
+      createDebugFile( "clean", fileName, cleanedCode );
     }
   }
 
-  private void logDifferences( String origCode,
-                               String cleanedCode,
-                               String fileName )
-  {
-    if( !origCode.equals( cleanedCode ) ) {
-      try {
-        File origDir = new File( parentDirectory, "orig" );
-        File cleanDir = new File( parentDirectory, "clean" );
-        origDir.mkdirs();
-        cleanDir.mkdirs();
-        File origFile = new File( origDir, fileName );
-        File cleanedFile = new File( cleanDir, fileName );
-        writeToFile( origCode, origFile );
-        writeToFile( cleanedCode, cleanedFile );
-      } catch( IOException e ) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
+  private void createDebugFile( String dirName, String fileName, String code ) {
+    File subDir = new File( directoryForDebugFiles, dirName );
+    subDir.mkdirs();
+    File file = new File( subDir, fileName );
+    try {
+      writeToFile( code, file );
+    } catch( IOException e ) {
+      System.err.println( "Failed to write to file " + file.getAbsolutePath() );
+      e.printStackTrace();
     }
   }
 
@@ -60,9 +72,6 @@ public class CodeCleanupRunner {
     FileWriter fileWriter = new FileWriter( file );
     try {
       fileWriter.write( Code );
-    } catch( IOException e ) {
-      System.err.println( "Failed to write to file " + file.getAbsolutePath() );
-      e.printStackTrace();
     } finally {
       fileWriter.close();
     }

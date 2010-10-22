@@ -15,14 +15,35 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.eclipse.rap.clientbuilder.TokenReader;
+import org.eclipse.rap.clientbuilder.TokenList;
+import org.mozilla.javascript.Token;
 
-public class TokenReaderTest extends TestCase {
+public class TokenList_Test extends TestCase {
+
+  public void testCreate() {
+    List tokens = new ArrayList();
+    tokens.add( new JavaScriptToken( Token.STRING, "Test" ) );
+    tokens.add( new JavaScriptToken( Token.LB, "[" ) );
+    TokenList tokenList = new TokenList( tokens );
+    assertEquals( 2, tokenList.size() );
+    assertEquals( tokens.get( 0 ), tokenList.getToken( 0 ) );
+  }
+
+  public void testRemove() {
+    List tokens = new ArrayList();
+    tokens.add( new JavaScriptToken( Token.STRING, "First" ) );
+    tokens.add( new JavaScriptToken( Token.STRING, "Second" ) );
+    TokenList tokenList = new TokenList( tokens );
+    tokens.remove( 0 );
+    assertEquals( 1, tokenList.size() );
+    assertEquals( 1, tokens.size() );
+    assertEquals( "Second", tokenList.getToken( 0 ).getValue() );
+  }
 
   public void testFindClosingFailsIfNotOnOpeningBrace() throws Exception {
     String input = "a, b, c";
     List tokens = parse( input );
-    TokenReader reader = new TokenReader( tokens );
+    TokenList reader = new TokenList( tokens );
     try {
       reader.findClosing( 0 );
       fail();
@@ -34,7 +55,7 @@ public class TokenReaderTest extends TestCase {
   public void testFindClosingBrace() throws Exception {
     String input = "a = { foo : 23, bar : { x : 7, y : [ 1, 2, 3 ] } }";
     List tokens = parse( input );
-    TokenReader reader = new TokenReader( tokens );
+    TokenList reader = new TokenList( tokens );
     int closingBrace = reader.findClosing( 2 );
     assertEquals( 24, closingBrace );
   }
@@ -42,7 +63,7 @@ public class TokenReaderTest extends TestCase {
   public void testFindClosingBracket() throws Exception {
     String input = "a = [ \"foo\", 23, { x : 7, y : [ 1, 2, 3 ] } ]";
     List tokens = parse( input );
-    TokenReader reader = new TokenReader( tokens );
+    TokenList reader = new TokenList( tokens );
     int closingBrace = reader.findClosing( 2 );
     assertEquals( 22, closingBrace );
   }
@@ -51,7 +72,7 @@ public class TokenReaderTest extends TestCase {
     String input = "a = { \"foo\" : {}, \"bar\" : {} }";
     List tokens = parse( input );
     TestUtil.printTokens( tokens );
-    TokenReader reader = new TokenReader( tokens );
+    TokenList reader = new TokenList( tokens );
     int startSelectedExpr = reader.findInObjectLiteral( "foo", 2 );
     assertEquals( 5, startSelectedExpr );
   }
@@ -60,7 +81,7 @@ public class TokenReaderTest extends TestCase {
     String input = "a = { foo : {}, bar : {} }";
     List tokens = parse( input );
     TestUtil.printTokens( tokens );
-    TokenReader reader = new TokenReader( tokens );
+    TokenList reader = new TokenList( tokens );
     int startSelectedExpr = reader.findInObjectLiteral( "bar", 2 );
     assertEquals( 10, startSelectedExpr );
   }
@@ -69,7 +90,7 @@ public class TokenReaderTest extends TestCase {
     String input = "a = { \"foo\" : {}, \"default\" : {} }";
     List tokens = parse( input );
     TestUtil.printTokens( tokens );
-    TokenReader reader = new TokenReader( tokens );
+    TokenList reader = new TokenList( tokens );
     int startSelectedExpr = reader.findInObjectLiteral( "bar", 2 );
     assertEquals( 10, startSelectedExpr );
   }

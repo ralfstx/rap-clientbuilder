@@ -9,33 +9,50 @@
  ******************************************************************************/
 package org.eclipse.rap.clientbuilder;
 
-import java.util.List;
-
 import org.mozilla.javascript.Token;
 
 import com.yahoo.platform.yui.compressor.JavaScriptToken;
 
-public class DebugTokenPrinter {
+/**
+ * Can be used to turn a list of JavaScriptTokens into formatted JavaScript
+ * code. The generated code might not be perfect, it is used mostly for
+ * debugging.
+ */
+public class JavaScriptPrinter {
 
   private static final String INDENT = "  ";
   private static final String NEWLINE = "\n";
-  private final StringBuffer code = new StringBuffer();
-  private String indent = "";
-  private String nextPrefix = "";
 
-  public static String printTokens( List tokens ) {
+  private final StringBuffer code;
+
+  private String indent;
+  private String nextPrefix;
+
+  public JavaScriptPrinter() {
+    code = new StringBuffer();
+    indent = "";
+    nextPrefix = "";
+  }
+
+  /**
+   * Turns a list of JavaScriptTokens into JavaScript code.
+   */
+  public static String printTokens( TokenList tokens ) {
     return printTokens( tokens, 0, tokens.size() - 1 );
   }
 
-  public static String printTokens( List tokens, int first, int last ) {
-    DebugTokenPrinter printer = new DebugTokenPrinter();
+  /**
+   * Turns a range of a list of JavaScriptTokens into JavaScript code.
+   */
+  public static String printTokens( TokenList tokens, int first, int last ) {
+    JavaScriptPrinter printer = new JavaScriptPrinter();
     for( int i = first; i <= last; i++ ) {
-      printer.printToken( ( JavaScriptToken )tokens.get( i ) );
+      printer.appendToken( tokens.getToken( i ) );
     }
     return printer.toString();
   }
 
-  public void printToken( JavaScriptToken token ) {
+  public void appendToken( JavaScriptToken token ) {
     int type = token.getType();
     if( type == Token.RC ) {
       code.append( NEWLINE );
@@ -67,6 +84,10 @@ public class DebugTokenPrinter {
     }
   }
 
+  public String toString() {
+    return code.toString();
+  }
+
   private String escapeString( String value ) {
     StringBuffer result = new StringBuffer();
     int length = value.length();
@@ -87,9 +108,5 @@ public class DebugTokenPrinter {
       }
     }
     return result.toString();
-  }
-
-  public String toString() {
-    return code.toString();
   }
 }
