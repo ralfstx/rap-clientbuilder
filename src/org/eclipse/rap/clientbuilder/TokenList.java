@@ -36,8 +36,17 @@ public class TokenList {
   }
 
   public void removeToken( int index ) {
-    if( index < tokens.size() ) {
+    replaceToken( index, null );
+  }
+
+  public void replaceToken( int index, JavaScriptToken[] replacement ) {
+    if( index >= 0 && index < tokens.size() ) {
       tokens.remove( index );
+      if( replacement != null ) {
+        for( int i = 0; i < replacement.length; i++ ) {
+          tokens.add( index + i, replacement[ i ] );
+        }
+      }
     }
   }
 

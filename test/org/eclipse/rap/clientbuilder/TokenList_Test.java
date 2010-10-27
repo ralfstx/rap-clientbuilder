@@ -50,7 +50,7 @@ public class TokenList_Test extends TestCase {
     assertEquals( "Second", tokenList.getToken( 0 ).getValue() );
   }
 
-  public void testRemoveManipulatesOriginalList() {
+  public void testRemoveToken_ModifiesOriginalList() {
     List tokens = new ArrayList();
     tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "First" ) );
     tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "Second" ) );
@@ -58,6 +58,54 @@ public class TokenList_Test extends TestCase {
     tokenList.removeToken( 0 );
     assertEquals( 1, tokens.size() );
     assertEquals( "Second", ( ( JavaScriptToken )tokens.get( 0 ) ).getValue() );
+  }
+
+  public void testReplaceToken() {
+    List tokens = new ArrayList();
+    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "orig 1" ) );
+    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "orig 2" ) );
+    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "orig 3" ) );
+    TokenList tokenList = new TokenList( tokens );
+    JavaScriptToken[] replacement = new JavaScriptToken[] {
+      new JavaScriptToken( Token.STRING, "new 1" ),
+      new JavaScriptToken( Token.STRING, "new 2" )
+    };
+    tokenList.replaceToken( 1, replacement );
+    assertEquals( 4, tokenList.size() );
+    assertEquals( "orig 1", tokenList.getToken( 0 ).getValue() );
+    assertEquals( "new 1", tokenList.getToken( 1 ).getValue() );
+    assertEquals( "new 2", tokenList.getToken( 2 ).getValue() );
+    assertEquals( "orig 3", tokenList.getToken( 3 ).getValue() );
+  }
+
+  public void testReplaceToken_WithNull() {
+    List tokens = new ArrayList();
+    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "orig 1" ) );
+    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "orig 2" ) );
+    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "orig 3" ) );
+    TokenList tokenList = new TokenList( tokens );
+    tokenList.replaceToken( 1, null );
+    assertEquals( 2, tokenList.size() );
+    assertEquals( "orig 1", tokenList.getToken( 0 ).getValue() );
+    assertEquals( "orig 3", tokenList.getToken( 1 ).getValue() );
+  }
+
+  public void testReplaceToken_ModifiesOriginalList() {
+    List tokens = new ArrayList();
+    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "orig 1" ) );
+    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "orig 2" ) );
+    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "orig 3" ) );
+    TokenList tokenList = new TokenList( tokens );
+    JavaScriptToken[] replacement = new JavaScriptToken[] {
+      new JavaScriptToken( Token.STRING, "new 1" ),
+      new JavaScriptToken( Token.STRING, "new 2" )
+    };
+    tokenList.replaceToken( 1, replacement );
+    assertEquals( 4, tokenList.size() );
+    assertEquals( "orig 1", ( ( JavaScriptToken )tokens.get( 0 ) ).getValue() );
+    assertEquals( "new 1", ( ( JavaScriptToken )tokens.get( 1 ) ).getValue() );
+    assertEquals( "new 2", ( ( JavaScriptToken )tokens.get( 2 ) ).getValue() );
+    assertEquals( "orig 3", ( ( JavaScriptToken )tokens.get( 3 ) ).getValue() );
   }
 
   public void testFindClosingFailsIfNotOnOpeningBrace() throws Exception {

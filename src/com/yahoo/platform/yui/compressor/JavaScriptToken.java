@@ -13,7 +13,7 @@ public class JavaScriptToken {
     private int type;
     private String value;
 
-    JavaScriptToken(int type, String value) {
+    public JavaScriptToken(int type, String value) {
         this.type = type;
         this.value = value;
     }

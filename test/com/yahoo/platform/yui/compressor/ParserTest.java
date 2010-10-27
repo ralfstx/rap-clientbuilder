@@ -45,4 +45,16 @@ public class ParserTest extends TestCase {
     assertEquals( Token.NUMBER, tokens.getToken( 2 ).getType() );
     assertEquals( Token.SEMI, tokens.getToken( 3 ).getType() );
   }
+
+  public void testParseArrayAccess() throws Exception {
+    TokenList tokens = TestUtil.parse( "a = $[23];" );
+    assertEquals( 7, tokens.size() );
+    assertEquals( Token.NAME, tokens.getToken( 0 ).getType() );
+    assertEquals( Token.ASSIGN, tokens.getToken( 1 ).getType() );
+    assertEquals( Token.NAME, tokens.getToken( 2 ).getType() );
+    assertEquals( Token.LB, tokens.getToken( 3 ).getType() );
+    assertEquals( Token.NUMBER, tokens.getToken( 4 ).getType() );
+    assertEquals( Token.RB, tokens.getToken( 5 ).getType() );
+    assertEquals( Token.SEMI, tokens.getToken( 6 ).getType() );
+  }
 }
