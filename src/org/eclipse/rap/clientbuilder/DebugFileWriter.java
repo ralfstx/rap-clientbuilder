@@ -15,9 +15,9 @@ import java.io.IOException;
 
 final class DebugFileWriter {
 
-  private File directoryForDebugFiles;
+  private final File directoryForDebugFiles;
 
-  void createDebugFilesIn( File parentDirectory ) {
+  public DebugFileWriter( File parentDirectory ) {
     this.directoryForDebugFiles = parentDirectory;
   }
 

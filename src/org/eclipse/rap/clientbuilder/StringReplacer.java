@@ -106,7 +106,7 @@ public final class StringReplacer {
                                                                int index )
   {
     JavaScriptToken[] replacement = new JavaScriptToken[] {
-      new JavaScriptToken( Token.NAME, "$" ),
+      new JavaScriptToken( Token.NAME, arrayName ),
       new JavaScriptToken( Token.LB, "[" ),
       new JavaScriptToken( Token.NUMBER, String.valueOf( index ) ),
       new JavaScriptToken( Token.RB, "]" )

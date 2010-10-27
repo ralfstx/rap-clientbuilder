@@ -166,7 +166,7 @@ public class CodeCleaner {
       result = new VariantSelection( offset, pos - 1, nameMatcher.matchedValue );
     }
     return result;
-  };
+  }
 
   public static class Range {
     public final int begin;
