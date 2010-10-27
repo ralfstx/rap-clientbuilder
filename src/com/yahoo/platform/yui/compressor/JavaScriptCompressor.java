@@ -21,7 +21,6 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.rap.clientbuilder.ICleanupCallback;
 import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.EvaluatorException;
@@ -547,7 +546,6 @@ public class JavaScriptCompressor {
     private Stack scopes = new Stack();
     private ScriptOrFnScope globalScope = new ScriptOrFnScope(-1, null);
     private Hashtable indexedScopes = new Hashtable();
-    private ICleanupCallback cleanupCallback;
 
     public JavaScriptCompressor(Reader in, ErrorReporter reporter)
             throws IOException, EvaluatorException {
@@ -555,9 +553,9 @@ public class JavaScriptCompressor {
         this.logger = reporter;
         this.tokens = parse(in, reporter);
     }
-    
-    public void setCleanupCallback( ICleanupCallback cleanupCallback ) {
-      this.cleanupCallback = cleanupCallback;
+
+    public ArrayList getTokens() {
+      return this.tokens;
     }
 
     public void compress(Writer out, int linebreak, boolean munge, boolean verbose,
@@ -567,9 +565,6 @@ public class JavaScriptCompressor {
         this.munge = munge;
         this.verbose = verbose;
 
-        if( cleanupCallback != null ) {
-          cleanupCallback.cleanup( this.tokens );
-        }
         processStringLiterals(this.tokens, !disableOptimizations);
 
         if (!disableOptimizations) {

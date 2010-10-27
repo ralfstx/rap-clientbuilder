@@ -19,7 +19,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.List;
+import java.util.ArrayList;
 
 import org.eclipse.swt.internal.widgets.displaykit.JsFilesList;
 import org.mozilla.javascript.ErrorReporter;
@@ -112,12 +112,8 @@ public class JsCompressor {
     try {
       JavaScriptCompressor compressor = new JavaScriptCompressor( inputReader,
                                                                   REPORTER );
-      compressor.setCleanupCallback( new ICleanupCallback() {
-
-        public void cleanup( List tokens ) {
-          runner.cleanupFile( tokens, inputFile.getName() );
-        };
-      } );
+      ArrayList tokens = compressor.getTokens();
+      runner.cleanupFile( tokens, inputFile.getName() );
       compressor.compress( stringWriter ,
                            -1,
                            true,

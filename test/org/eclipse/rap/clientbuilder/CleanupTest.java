@@ -109,7 +109,6 @@ public class CleanupTest extends TestCase {
                    + "  \"default\" : null\n"
                    + "} )";
     TokenList tokens = TestUtil.parse( input );
-    TestUtil.printTokens( tokens );
     CodeCleaner cleaner = new CodeCleaner( tokens );
     cleaner.removeVariantsCode();
     String result = JavaScriptPrinter.printTokens( tokens );

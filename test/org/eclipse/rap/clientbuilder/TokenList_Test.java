@@ -135,7 +135,6 @@ public class TokenList_Test extends TestCase {
   public void testFindInObjectLiteral() throws Exception {
     String input = "a = { \"foo\" : {}, \"bar\" : {} }";
     TokenList tokens = TestUtil.parse( input );
-    TestUtil.printTokens( tokens );
     int startSelectedExpr = tokens.findInObjectLiteral( "foo", 2 );
     assertEquals( 5, startSelectedExpr );
   }
@@ -143,7 +142,6 @@ public class TokenList_Test extends TestCase {
   public void testFindInObjectLiteralUnquoted() throws Exception {
     String input = "a = { foo : {}, bar : {} }";
     TokenList tokens = TestUtil.parse( input );
-    TestUtil.printTokens( tokens );
     int startSelectedExpr = tokens.findInObjectLiteral( "bar", 2 );
     assertEquals( 10, startSelectedExpr );
   }
@@ -151,7 +149,6 @@ public class TokenList_Test extends TestCase {
   public void testFindInObjectLiteralDefault() throws Exception {
     String input = "a = { \"foo\" : {}, \"default\" : {} }";
     TokenList tokens = TestUtil.parse( input );
-    TestUtil.printTokens( tokens );
     int startSelectedExpr = tokens.findInObjectLiteral( "bar", 2 );
     assertEquals( 10, startSelectedExpr );
   }
