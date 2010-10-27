@@ -19,18 +19,18 @@ import org.eclipse.rap.clientbuilder.TokenList.TokenMatcher;
 
 public class CodeCleaner {
 
-  private final TokenList reader;
+  private final TokenList tokens;
 
   private final Set tokensToRemove;
 
   public CodeCleaner( TokenList tokens ) {
-    this.reader = tokens;
+    this.tokens = tokens;
     tokensToRemove = new HashSet();
   }
 
   public void removeVariantsCode() {
     int pos = 0;
-    while( pos < reader.size() ) {
+    while( pos < tokens.size() ) {
       int nextPos = removeConditional( pos );
       if( nextPos == pos ) {
         nextPos = replaceSelection( pos );
@@ -48,15 +48,15 @@ public class CodeCleaner {
     VariantConditional conditional = readVariantConditional( offset );
     if( conditional != null ) {
       if( canRemoveVariant( conditional.variant ) ) {
-        int endExpr = reader.readExpression( conditional.end + 1 );
+        int endExpr = tokens.readExpression( conditional.end + 1 );
         if( endExpr != -1 ) {
           markTokensForRemoval( conditional.begin, endExpr );
           nextPos = endExpr + 1;
-          if( TokenMatcher.ELSE.matches( reader.getToken( nextPos ) ) ) {
+          if( TokenMatcher.ELSE.matches( tokens.getToken( nextPos ) ) ) {
             markTokensForRemoval( nextPos, nextPos );
             nextPos++;
-            if( TokenMatcher.LEFT_BRACE.matches( reader.getToken( nextPos ) ) ) {
-              int closingBrace = reader.findClosing( nextPos );
+            if( TokenMatcher.LEFT_BRACE.matches( tokens.getToken( nextPos ) ) ) {
+              int closingBrace = tokens.findClosing( nextPos );
               if( closingBrace != -1 ) {
                 markTokensForRemoval( nextPos, nextPos );
                 markTokensForRemoval( closingBrace, closingBrace );
@@ -74,16 +74,16 @@ public class CodeCleaner {
     int nextPos = offset;
     VariantSelection selection = readVariantSelection( offset );
     if( selection != null ) {
-      int closingBrace = reader.findClosing( selection.end );
+      int closingBrace = tokens.findClosing( selection.end );
       if( closingBrace != -1 ) {
-        if( TokenMatcher.RIGHT_PAREN.matches( reader.getToken( closingBrace + 1 ) ) ) {
+        if( TokenMatcher.RIGHT_PAREN.matches( tokens.getToken( closingBrace + 1 ) ) ) {
           int closingParen = closingBrace + 1;
           nextPos = selection.end + 1;
           if( canRemoveVariant( selection.variant ) ) {
             int selectedExpression
-            = reader.findInObjectLiteral( "off", selection.end );
+              = tokens.findInObjectLiteral( "off", selection.end );
             if( selectedExpression != -1 ) {
-              int endExpression = reader.readExpression( selectedExpression );
+              int endExpression = tokens.readExpression( selectedExpression );
               if( endExpression != -1 ) {
                 markTokensForRemoval( offset, selectedExpression - 1 );
                 markTokensForRemoval( endExpression + 1, closingParen );
@@ -110,7 +110,7 @@ public class CodeCleaner {
     Collections.reverse( removeList );
     for( Iterator iterator = removeList.iterator(); iterator.hasNext(); ) {
       Integer index = ( Integer )iterator.next();
-      reader.removeToken( index.intValue() );
+      tokens.removeToken( index.intValue() );
     }
   }
 
@@ -125,21 +125,21 @@ public class CodeCleaner {
     int pos = offset;
     boolean matched = true;
     TokenMatcher nameMatcher = TokenMatcher.string();
-    matched &= TokenMatcher.IF.matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.LEFT_PAREN.matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.name( "qx" ).matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.DOT.matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.name( "core" ).matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.DOT.matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.name( "Variant" ).matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.DOT.matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.name( "isSet" ).matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.LEFT_PAREN.matches( reader.getToken( pos++ ) );
-    matched &= nameMatcher.matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.COMMA.matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.string( "on" ).matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.RIGHT_PAREN.matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.RIGHT_PAREN.matches( reader.getToken( pos++ ) );
+    matched &= TokenMatcher.IF.matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.LEFT_PAREN.matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.name( "qx" ).matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.DOT.matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.name( "core" ).matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.DOT.matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.name( "Variant" ).matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.DOT.matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.name( "isSet" ).matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.LEFT_PAREN.matches( tokens.getToken( pos++ ) );
+    matched &= nameMatcher.matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.COMMA.matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.string( "on" ).matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.RIGHT_PAREN.matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.RIGHT_PAREN.matches( tokens.getToken( pos++ ) );
     if( matched ) {
       result = new VariantConditional( offset, pos - 1, nameMatcher.matchedValue );
     }
@@ -151,17 +151,17 @@ public class CodeCleaner {
     int pos = offset;
     boolean matched = true;
     TokenMatcher nameMatcher = TokenMatcher.string();
-    matched &= TokenMatcher.name( "qx" ).matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.DOT.matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.name( "core" ).matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.DOT.matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.name( "Variant" ).matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.DOT.matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.name( "select" ).matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.LEFT_PAREN.matches( reader.getToken( pos++ ) );
-    matched &= nameMatcher.matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.COMMA.matches( reader.getToken( pos++ ) );
-    matched &= TokenMatcher.LEFT_BRACE.matches( reader.getToken( pos++ ) );
+    matched &= TokenMatcher.name( "qx" ).matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.DOT.matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.name( "core" ).matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.DOT.matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.name( "Variant" ).matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.DOT.matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.name( "select" ).matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.LEFT_PAREN.matches( tokens.getToken( pos++ ) );
+    matched &= nameMatcher.matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.COMMA.matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.LEFT_BRACE.matches( tokens.getToken( pos++ ) );
     if( matched ) {
       result = new VariantSelection( offset, pos - 1, nameMatcher.matchedValue );
     }

@@ -7,9 +7,10 @@
  * Contributors:
  *   EclipseSource - initial API and implementation
  ******************************************************************************/
-package com.yahoo.platform.yui.compressor;
+package org.eclipse.rap.clientbuilder;
 
 import java.io.IOException;
+
 
 import junit.framework.TestCase;
 

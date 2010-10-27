@@ -7,24 +7,16 @@
  * Contributors:
  *   EclipseSource - initial API and implementation
  ******************************************************************************/
-package com.yahoo.platform.yui.compressor;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+package org.eclipse.rap.clientbuilder;
 
 import junit.framework.TestCase;
-
-import org.eclipse.rap.clientbuilder.CodeCleaner;
-import org.eclipse.rap.clientbuilder.JavaScriptPrinter;
-import org.eclipse.rap.clientbuilder.TokenList;
 
 public class CleanupTest extends TestCase {
 
   public void testRemoveEmptyDebugVariantConditional() throws Exception {
     String input = "if( qx.core.Variant.isSet( \"qx.debug\", \"on\" ) ) {\n"
                    + "}\n";
-    TokenList tokens = parse( input );
+    TokenList tokens = TestUtil.parse( input );
     CodeCleaner cleaner = new CodeCleaner( tokens );
     cleaner.removeVariantsCode();
     assertEquals( 0, tokens.size() );
@@ -33,7 +25,7 @@ public class CleanupTest extends TestCase {
   public void testRemoveCompatVariantConditional() throws Exception {
     String input = "if( qx.core.Variant.isSet( \"qx.compatibility\", \"on\" ) ) {\n"
                    + "}\n";
-    TokenList tokens = parse( input );
+    TokenList tokens = TestUtil.parse( input );
     CodeCleaner cleaner = new CodeCleaner( tokens );
     cleaner.removeVariantsCode();
     assertEquals( 0, tokens.size() );
@@ -42,7 +34,7 @@ public class CleanupTest extends TestCase {
   public void testRemoveAspectVariantConditional() throws Exception {
     String input = "if( qx.core.Variant.isSet( \"qx.aspects\", \"on\" ) ) {\n"
       + "}\n";
-    TokenList tokens = parse( input );
+    TokenList tokens = TestUtil.parse( input );
     CodeCleaner cleaner = new CodeCleaner( tokens );
     cleaner.removeVariantsCode();
     assertEquals( 0, tokens.size() );
@@ -51,7 +43,7 @@ public class CleanupTest extends TestCase {
   public void testRemoveMultipleVariantConditionals() throws Exception {
     String input = "if( qx.core.Variant.isSet( \"qx.debug\", \"on\" ) ) {\n"
                    + "}\n";
-    TokenList tokens = parse( input );
+    TokenList tokens = TestUtil.parse( input );
     CodeCleaner cleaner = new CodeCleaner( tokens );
     cleaner.removeVariantsCode();
     assertEquals( 0, tokens.size() );
@@ -63,7 +55,7 @@ public class CleanupTest extends TestCase {
                    + "  if( false ) { throw \"ERROR\" }\n"
                    + "}\n"
                    + "b = 2;";
-    TokenList tokens = parse( input );
+    TokenList tokens = TestUtil.parse( input );
     CodeCleaner cleaner = new CodeCleaner( tokens );
     cleaner.removeVariantsCode();
     String result = JavaScriptPrinter.printTokens( tokens );
@@ -76,7 +68,7 @@ public class CleanupTest extends TestCase {
                    + "}\n else {\n"
                    + "  b = 2;\n"
                    + "}";
-    TokenList tokens = parse( input );
+    TokenList tokens = TestUtil.parse( input );
     CodeCleaner cleaner = new CodeCleaner( tokens );
     cleaner.removeVariantsCode();
     String result = JavaScriptPrinter.printTokens( tokens );
@@ -101,7 +93,7 @@ public class CleanupTest extends TestCase {
                       + "  catch ( ex ) {\n"
                       + "  }\n"
                       + "}";
-    TokenList tokens = parse( input );
+    TokenList tokens = TestUtil.parse( input );
     CodeCleaner cleaner = new CodeCleaner( tokens );
     cleaner.removeVariantsCode();
     String result = JavaScriptPrinter.printTokens( tokens );
@@ -116,24 +108,11 @@ public class CleanupTest extends TestCase {
                    + "  },\n"
                    + "  \"default\" : null\n"
                    + "} )";
-    TokenList tokens = parse( input );
+    TokenList tokens = TestUtil.parse( input );
     TestUtil.printTokens( tokens );
     CodeCleaner cleaner = new CodeCleaner( tokens );
     cleaner.removeVariantsCode();
     String result = JavaScriptPrinter.printTokens( tokens );
     assertEquals( "result = null;", result );
-  }
-
-  private static TokenList parse( String input ) throws IOException {
-    JavaScriptToken[] tokens = TestUtil.parse( input );
-    return new TokenList( createList( tokens ) );
-  }
-  
-  private static List createList( JavaScriptToken[] tokens ) {
-    List tokenList = new ArrayList();
-    for( int i = 0; i < tokens.length; i++ ) {
-      tokenList.add( tokens[ i ] );
-    }
-    return tokenList;
   }
 }

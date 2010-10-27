@@ -23,6 +23,24 @@ public class TokenList {
     this.tokens = tokens;
   }
 
+  public int size() {
+    return tokens.size();
+  }
+
+  public JavaScriptToken getToken( int index ) {
+    JavaScriptToken token = null;
+    if( index >= 0 && index < tokens.size() ) {
+      token = ( JavaScriptToken )tokens.get( index );
+    }
+    return token;
+  }
+
+  public void removeToken( int index ) {
+    if( index < tokens.size() ) {
+      tokens.remove( index );
+    }
+  }
+
   public int readExpression( int offset ) {
     int result = -1;
     JavaScriptToken token = getToken( offset );
@@ -125,24 +143,6 @@ public class TokenList {
     return result;
   }
   
-  public int size() {
-    return tokens.size();
-  }
-
-  public JavaScriptToken getToken( int index ) {
-    JavaScriptToken token = null;
-    if( index < tokens.size() ) {
-      token = ( JavaScriptToken )tokens.get( index );
-    }
-    return token;
-  }
-
-  public void removeToken( int index ) {
-    if( index < tokens.size() ) {
-      tokens.remove( index );
-    }
-  }
-
   public static class TokenPattern {
     
     private final TokenMatcher[] matchers;
