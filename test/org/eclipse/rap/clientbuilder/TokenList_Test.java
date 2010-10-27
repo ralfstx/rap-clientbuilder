@@ -17,22 +17,21 @@ import junit.framework.TestCase;
 import org.mozilla.javascript.Token;
 
 import com.yahoo.platform.yui.compressor.JavaScriptToken;
-import com.yahoo.platform.yui.compressor.TestAdapter;
 
 public class TokenList_Test extends TestCase {
 
   public void testCreate() {
     List tokens = new ArrayList();
-    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "Test" ) );
-    tokens.add( TestAdapter.createJavaScriptToken( Token.LB, "[" ) );
+    tokens.add( new JavaScriptToken( Token.STRING, "Test" ) );
+    tokens.add( new JavaScriptToken( Token.LB, "[" ) );
     TokenList tokenList = new TokenList( tokens );
     assertEquals( 2, tokenList.size() );
   }
 
   public void testGetToken() {
     List tokens = new ArrayList();
-    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "Test" ) );
-    tokens.add( TestAdapter.createJavaScriptToken( Token.LB, "[" ) );
+    tokens.add( new JavaScriptToken( Token.STRING, "Test" ) );
+    tokens.add( new JavaScriptToken( Token.LB, "[" ) );
     TokenList tokenList = new TokenList( tokens );
     assertNull( tokenList.getToken( -1 ) );
     assertEquals( tokens.get( 0 ), tokenList.getToken( 0 ) );
@@ -42,8 +41,8 @@ public class TokenList_Test extends TestCase {
 
   public void testRemoveToken() {
     List tokens = new ArrayList();
-    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "First" ) );
-    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "Second" ) );
+    tokens.add( new JavaScriptToken( Token.STRING, "First" ) );
+    tokens.add( new JavaScriptToken( Token.STRING, "Second" ) );
     TokenList tokenList = new TokenList( tokens );
     tokenList.removeToken( 0 );
     assertEquals( 1, tokenList.size() );
@@ -52,8 +51,8 @@ public class TokenList_Test extends TestCase {
 
   public void testRemoveToken_ModifiesOriginalList() {
     List tokens = new ArrayList();
-    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "First" ) );
-    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "Second" ) );
+    tokens.add( new JavaScriptToken( Token.STRING, "First" ) );
+    tokens.add( new JavaScriptToken( Token.STRING, "Second" ) );
     TokenList tokenList = new TokenList( tokens );
     tokenList.removeToken( 0 );
     assertEquals( 1, tokens.size() );
@@ -62,9 +61,9 @@ public class TokenList_Test extends TestCase {
 
   public void testReplaceToken() {
     List tokens = new ArrayList();
-    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "orig 1" ) );
-    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "orig 2" ) );
-    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "orig 3" ) );
+    tokens.add( new JavaScriptToken( Token.STRING, "orig 1" ) );
+    tokens.add( new JavaScriptToken( Token.STRING, "orig 2" ) );
+    tokens.add( new JavaScriptToken( Token.STRING, "orig 3" ) );
     TokenList tokenList = new TokenList( tokens );
     JavaScriptToken[] replacement = new JavaScriptToken[] {
       new JavaScriptToken( Token.STRING, "new 1" ),
@@ -80,9 +79,9 @@ public class TokenList_Test extends TestCase {
 
   public void testReplaceToken_WithNull() {
     List tokens = new ArrayList();
-    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "orig 1" ) );
-    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "orig 2" ) );
-    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "orig 3" ) );
+    tokens.add( new JavaScriptToken( Token.STRING, "orig 1" ) );
+    tokens.add( new JavaScriptToken( Token.STRING, "orig 2" ) );
+    tokens.add( new JavaScriptToken( Token.STRING, "orig 3" ) );
     TokenList tokenList = new TokenList( tokens );
     tokenList.replaceToken( 1, null );
     assertEquals( 2, tokenList.size() );
@@ -92,9 +91,9 @@ public class TokenList_Test extends TestCase {
 
   public void testReplaceToken_ModifiesOriginalList() {
     List tokens = new ArrayList();
-    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "orig 1" ) );
-    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "orig 2" ) );
-    tokens.add( TestAdapter.createJavaScriptToken( Token.STRING, "orig 3" ) );
+    tokens.add( new JavaScriptToken( Token.STRING, "orig 1" ) );
+    tokens.add( new JavaScriptToken( Token.STRING, "orig 2" ) );
+    tokens.add( new JavaScriptToken( Token.STRING, "orig 3" ) );
     TokenList tokenList = new TokenList( tokens );
     JavaScriptToken[] replacement = new JavaScriptToken[] {
       new JavaScriptToken( Token.STRING, "new 1" ),
