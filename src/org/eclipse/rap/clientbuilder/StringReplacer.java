@@ -42,48 +42,64 @@ public final class StringReplacer {
   }
 
   public void replaceStrings( TokenList tokens ) {
-    if( strings == null ) {
-      createStringList();
-    }
+    ensureStringListCreated();
     int length = tokens.size();
     for( int pos = length - 1; pos >= 0; pos-- ) {
       if( isReplacableString( tokens, pos ) ) {
-        String value = tokens.getToken( pos ).getValue();
-        int index = getIndexForString( value );
-        JavaScriptToken[] replacement = createTokensForArrayAccess( "$", index );
-        tokens.replaceToken( pos, replacement );
+        String string = tokens.getToken( pos ).getValue();
+        int index = getIndex( string );
+        if( index != -1 ) {
+          JavaScriptToken[] replacement = createTokensForArrayAccess( "$", index );
+          tokens.replaceToken( pos, replacement );
+        }
+      }
+    }
+  }
+
+  public void optimize() {
+    ensureStringListCreated();
+    for( int i = strings.size() - 1; i >= 0; i-- ) {
+      String string = ( String )strings.get( i );
+      if( !isWorthReplacing( string ) ) {
+        strings.remove( i );
       }
     }
   }
 
   public String[] getStrings() {
-    if( strings == null ) {
-      createStringList();
-    }
+    ensureStringListCreated();
     String[] result = new String[ strings.size() ];
     strings.toArray( result );
     return result;
   }
 
-  private void createStringList() {
-    strings = new ArrayList( stringMap.keySet() );
-    Comparator comparator = new Comparator() {
-
-      public int compare( Object o1, Object o2 ) {
-        Integer freq1 = ( Integer )stringMap.get( o1 );
-        Integer freq2 = ( Integer )stringMap.get( o2 );
-        return freq2.compareTo( freq1 );
-      }
-    };
-    Collections.sort( strings, comparator );
+  private boolean isWorthReplacing( String string ) {
+    int freq = getFrequency( string );
+    return freq > 1 && ( string.length() + 2 ) * ( freq - 1 ) > freq * 6;
   }
 
-  private int getIndexForString( String string ) {
-    int index = strings.indexOf( string );
-    if( index == -1 ) {
-      throw new IllegalArgumentException( "String not registered: " + string );
+  private int getFrequency( String string ) {
+    Integer frequency = ( Integer )stringMap.get( string );
+    return frequency == null ? 0 : frequency.intValue();
+  }
+
+  private int getIndex( String string ) {
+    return strings.indexOf( string );
+  }
+
+  private void ensureStringListCreated() {
+    if( strings == null ) {
+      strings = new ArrayList( stringMap.keySet() );
+      Comparator comparator = new Comparator() {
+      
+        public int compare( Object o1, Object o2 ) {
+          int freq1 = getFrequency( ( String )o1 );
+          int freq2 = getFrequency( ( String )o2 );
+          return freq1 < freq2 ? 1 : ( freq1 == freq2 ? 0 : -1 );
+        }
+      };
+      Collections.sort( strings, comparator );
     }
-    return index;
   }
 
   private static JavaScriptToken[] createTokensForArrayAccess( String arrayName,
@@ -98,7 +114,7 @@ public final class StringReplacer {
     return replacement;
   }
 
-  private boolean isReplacableString( TokenList tokens, int pos ) {
+  private static boolean isReplacableString( TokenList tokens, int pos ) {
     boolean result = false;
     JavaScriptToken token = tokens.getToken( pos );
     if( isString( token ) ) {

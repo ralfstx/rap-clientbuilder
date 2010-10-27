@@ -34,24 +34,6 @@ public class JavaScriptPrinter {
     nextPrefix = "";
   }
 
-  /**
-   * Turns a list of JavaScriptTokens into JavaScript code.
-   */
-  public static String printTokens( TokenList tokens ) {
-    return printTokens( tokens, 0, tokens.size() - 1 );
-  }
-
-  /**
-   * Turns a range of a list of JavaScriptTokens into JavaScript code.
-   */
-  public static String printTokens( TokenList tokens, int first, int last ) {
-    JavaScriptPrinter printer = new JavaScriptPrinter();
-    for( int i = first; i <= last; i++ ) {
-      printer.appendToken( tokens.getToken( i ) );
-    }
-    return printer.toString();
-  }
-
   public void appendToken( JavaScriptToken token ) {
     int type = token.getType();
     if( type == Token.RC ) {
@@ -88,7 +70,25 @@ public class JavaScriptPrinter {
     return code.toString();
   }
 
-  private String escapeString( String value ) {
+  /**
+   * Turns a list of JavaScriptTokens into JavaScript code.
+   */
+  public static String printTokens( TokenList tokens ) {
+    return printTokens( tokens, 0, tokens.size() - 1 );
+  }
+
+  /**
+   * Turns a range of a list of JavaScriptTokens into JavaScript code.
+   */
+  public static String printTokens( TokenList tokens, int first, int last ) {
+    JavaScriptPrinter printer = new JavaScriptPrinter();
+    for( int i = first; i <= last; i++ ) {
+      printer.appendToken( tokens.getToken( i ) );
+    }
+    return printer.toString();
+  }
+
+  public static String escapeString( String value ) {
     StringBuffer result = new StringBuffer();
     int length = value.length();
     for( int i = 0; i < length; i++ ) {

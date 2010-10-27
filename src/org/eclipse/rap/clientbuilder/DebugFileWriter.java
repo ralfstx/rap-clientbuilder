@@ -12,9 +12,8 @@ package org.eclipse.rap.clientbuilder;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 
-final class CodeCleanupRunner {
+final class DebugFileWriter {
 
   private File directoryForDebugFiles;
 
@@ -22,37 +21,17 @@ final class CodeCleanupRunner {
     this.directoryForDebugFiles = parentDirectory;
   }
 
-  void cleanupFile( List tokens, String fileName ) {
-    TokenList tokenList = new TokenList( tokens );
-    String originalCode = getCodeForDebugFile( tokenList );
-    doCleanup( tokenList );
-    String cleanedCode = getCodeForDebugFile( tokenList );
-    createDebugFiles( originalCode, cleanedCode, fileName );
-  }
-
-  private String getCodeForDebugFile( TokenList tokens ) {
-    String code = null;
+  public void beforeCleanup( TokenList tokens, String fileName ) {
     if( directoryForDebugFiles != null ) {
-      code = JavaScriptPrinter.printTokens( tokens );
+      String code = getCodeForDebugFile( tokens );
+      createDebugFile( "orig", fileName, code );
     }
-    return code;
   }
 
-  private void doCleanup( TokenList tokens ) {
-    CodeCleaner codeCleaner = new CodeCleaner( tokens );
-    codeCleaner.removeVariantsCode();
-  }
-
-  private void createDebugFiles( String origCode,
-                                 String cleanedCode,
-                                 String fileName )
-  {
-    if( directoryForDebugFiles != null
-        && origCode != null
-        && !origCode.equals( cleanedCode ) )
-    {
-      createDebugFile( "orig", fileName, origCode );
-      createDebugFile( "clean", fileName, cleanedCode );
+  public void afterCleanup( TokenList tokens, String fileName ) {
+    if( directoryForDebugFiles != null ) {
+      String code = getCodeForDebugFile( tokens );
+      createDebugFile( "clean", fileName, code );
     }
   }
 
@@ -66,6 +45,14 @@ final class CodeCleanupRunner {
       System.err.println( "Failed to write to file " + file.getAbsolutePath() );
       e.printStackTrace();
     }
+  }
+
+  private String getCodeForDebugFile( TokenList tokens ) {
+    String code = null;
+    if( directoryForDebugFiles != null ) {
+      code = JavaScriptPrinter.printTokens( tokens );
+    }
+    return code;
   }
 
   private static void writeToFile( String Code, File file ) throws IOException {

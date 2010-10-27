@@ -10,36 +10,17 @@
 package org.eclipse.rap.clientbuilder;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
 
 import org.eclipse.swt.internal.widgets.displaykit.JsFilesList;
-import org.mozilla.javascript.ErrorReporter;
-import org.mozilla.javascript.EvaluatorException;
-
-import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
 
 public class JsCompressor {
 
   private static final String JS_SOURCE_DIR = "js";
   private static final String TARGET_JS_FILE = "resources/client.js";
-  private static final String CHARSET = "UTF-8";
-  private static final boolean PRESERVE_ALL_SEMICOLONS = false;
-  private static final boolean DISABLE_OPTIMIZATIONS = false;
-  private static final boolean VERBOSE = false;
   private static final boolean CREATE_DEBUG_FILES
     = "true".equals( System.getProperty( "jscompressor.debug" ) );
-  private final static ErrorReporter REPORTER = new SystemErrorReporter();
-  
-  private static CodeCleanupRunner runner = new CodeCleanupRunner();
+  static DebugFileWriter debugFileWriter = new DebugFileWriter();
 
   public static void main( String[] args ) {
     if( args.length < 1 ) {
@@ -55,20 +36,20 @@ public class JsCompressor {
       File debugDir = new File( projectDir, "tmp" );
       debugDir.mkdir();
       System.out.println( "Creating debug files in " + debugDir );
-      runner.createDebugFilesIn( debugDir );
+      debugFileWriter.createDebugFilesIn( debugDir );
     }
     File inputDir = new File( projectDir, JS_SOURCE_DIR );
     if( !inputDir.exists() ) {
       String message = "Javascript source directory not found: " + inputDir;
       throw new IllegalArgumentException( message );
     }
-    File[] inputFiles = getJsFilesList( inputDir );
+    JSFile[] inputFiles = getJsFilesList( inputDir );
     File outputFile = new File( projectDir, TARGET_JS_FILE );
     try {
       long start = System.currentTimeMillis();
       String compressed = compressFiles( inputFiles );
       long time = System.currentTimeMillis() - start;
-      writeToFile( outputFile, compressed );
+      JSFile.writeToFile( outputFile, compressed );
       int count = inputFiles.length;
       System.out.println( "Compressed " + count + " files in " + time + " ms" );
       System.out.println( "Result size: " + compressed.length() + " bytes" );
@@ -77,13 +58,14 @@ public class JsCompressor {
     }
   }
 
-  private static File[] getJsFilesList( File inputDir ) {
-    File[] inputFiles;
+  private static JSFile[] getJsFilesList( File inputDir ) {
+    JSFile[] inputFiles;
     try {
       String[] fileNames = JsFilesList.getFiles();
-      inputFiles = new File[ fileNames.length ];
+      inputFiles = new JSFile[ fileNames.length ];
       for( int i = 0; i < inputFiles.length; i++ ) {
-        inputFiles[ i ] = new File( inputDir, fileNames[ i ] );
+        File file = new File( inputDir, fileNames[ i ] );
+        inputFiles[ i ] = new JSFile( file );
       }
     } catch( Exception e ) {
       String message = "Failed to get JS files list from rwt.q07 project";
@@ -92,92 +74,47 @@ public class JsCompressor {
     return inputFiles;
   }
 
-  private static String compressFiles( File[] inputFiles ) throws IOException {
-    StringBuffer buffer = new StringBuffer();
+  private static String compressFiles( JSFile[] inputFiles ) throws IOException
+  {
+    StringReplacer stringReplacer = new StringReplacer();
     for( int i = 0; i < inputFiles.length; i++ ) {
-      File inputFile = inputFiles[ i ];
-      String result = compressFile( inputFile );
+      JSFile inputFile = inputFiles[ i ];
+      stringReplacer.discoverStrings( inputFile.getTokens() );
+    }
+    stringReplacer.optimize();
+    StringBuffer buffer = new StringBuffer();
+    buffer.append( "(function($){" );
+    for( int i = 0; i < inputFiles.length; i++ ) {
+      JSFile inputFile = inputFiles[ i ];
+      stringReplacer.replaceStrings( inputFile.getTokens() );
+      String result = inputFile.compress();
       buffer.append( result );
       buffer.append( "\n" );
-      System.out.println( inputFile.getAbsolutePath() + "\t" + result.length() );
+      System.out.println( inputFile.getFile().getAbsolutePath()
+                          + "\t"
+                          + result.length() );
     }
+    buffer.append( "})(");
+    String[] strings = stringReplacer.getStrings();
+    String stringArrayCode = createStringArray( strings );
+    System.out.println( "array size: " + strings.length );
+    System.out.println( "array code size: " + stringArrayCode.length() );
+    buffer.append( stringArrayCode );
+    buffer.append( ");" );
     return buffer.toString();
   }
 
-  private static String compressFile( final File inputFile ) throws IOException {
-    String result;
-    InputStream inputStream = new FileInputStream( inputFile );
-    Reader inputReader = new InputStreamReader( inputStream, CHARSET );
-    StringWriter stringWriter = new StringWriter();
-    try {
-      JavaScriptCompressor compressor = new JavaScriptCompressor( inputReader,
-                                                                  REPORTER );
-      ArrayList tokens = compressor.getTokens();
-      runner.cleanupFile( tokens, inputFile.getName() );
-      compressor.compress( stringWriter ,
-                           -1,
-                           true,
-                           VERBOSE,
-                           PRESERVE_ALL_SEMICOLONS,
-                           DISABLE_OPTIMIZATIONS );
-      stringWriter.flush();
-      result = stringWriter.getBuffer().toString();
-      stringWriter.close();
-    } finally {
-      inputReader.close();
+  private static String createStringArray( String[] strings ) {
+    StringBuffer buffer = new StringBuffer();
+    buffer.append( "[" );
+    for( int i = 0; i < strings.length; i++ ) {
+      String string = strings[ i ];
+      buffer.append( "\"" + JavaScriptPrinter.escapeString( string ) + "\"," );
     }
-    return result;
-  }
-
-  private static void writeToFile( File outputFile, String copmressed )
-    throws IOException
-  {
-    FileOutputStream outputStream = new FileOutputStream( outputFile );
-    Writer outputWriter = new OutputStreamWriter( outputStream, CHARSET );
-    try {
-      outputWriter.write( copmressed );
-    } finally {
-      outputWriter.close();
+    if( buffer.charAt( buffer.length() - 1 ) == ',' ) {
+      buffer.setLength( buffer.length() - 1 );
     }
-  }
-
-  private static final class SystemErrorReporter implements ErrorReporter {
-
-    public void warning( String message,
-                         String sourceName,
-                         int line,
-                         String lineSource,
-                         int lineOffset )
-    {
-      System.out.println( getMessage( "WARNING", message ) );
-    }
-
-    public void error( String message,
-                       String sourceName,
-                       int line,
-                       String lineSource,
-                       int lineOffset )
-    {
-      System.out.println( getMessage( "ERROR", message ) );
-    }
-
-    public EvaluatorException runtimeError( String message,
-                                            String sourceName,
-                                            int line,
-                                            String lineSource,
-                                            int lineOffset )
-    {
-      error( message, sourceName, line, lineSource, lineOffset );
-      return new EvaluatorException( message );
-    }
-
-    private String getMessage( String severity, String message ) {
-      StringBuffer result = new StringBuffer();
-      result.append( "\n[" );
-      result.append( severity );
-      result.append( "] " );
-      result.append( message );
-      return result.toString();
-    }
+    buffer.append( "]" );
+    return buffer.toString();
   }
 }
