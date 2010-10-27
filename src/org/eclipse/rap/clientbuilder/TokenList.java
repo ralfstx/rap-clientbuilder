@@ -40,11 +40,18 @@ public class TokenList {
   }
 
   public void replaceToken( int index, JavaScriptToken[] replacement ) {
-    if( index >= 0 && index < tokens.size() ) {
-      tokens.remove( index );
+    replaceTokens( index, index, replacement );
+  }
+
+  public void replaceTokens( int begin, int end, JavaScriptToken[] replacement )
+  {
+    if( begin >= 0 && begin <= end && end < tokens.size() ) {
+      for( int i = begin; i <= end; i++ ) {
+        tokens.remove( begin );
+      }
       if( replacement != null ) {
         for( int i = 0; i < replacement.length; i++ ) {
-          tokens.add( index + i, replacement[ i ] );
+          tokens.add( begin + i, replacement[ i ] );
         }
       }
     }

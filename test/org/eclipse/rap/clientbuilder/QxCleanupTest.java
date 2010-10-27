@@ -11,14 +11,14 @@ package org.eclipse.rap.clientbuilder;
 
 import junit.framework.TestCase;
 
-public class CleanupTest extends TestCase {
+public class QxCleanupTest extends TestCase {
 
   public void testRemoveEmptyDebugVariantConditional() throws Exception {
     String input = "if( qx.core.Variant.isSet( \"qx.debug\", \"on\" ) ) {\n"
                    + "}\n";
     TokenList tokens = TestUtil.parse( input );
-    CodeCleaner cleaner = new CodeCleaner( tokens );
-    cleaner.removeVariantsCode();
+    QxCodeCleaner cleaner = new QxCodeCleaner( tokens );
+    cleaner.cleanupQxCode();
     assertEquals( 0, tokens.size() );
   }
 
@@ -26,8 +26,8 @@ public class CleanupTest extends TestCase {
     String input = "if( qx.core.Variant.isSet( \"qx.compatibility\", \"on\" ) ) {\n"
                    + "}\n";
     TokenList tokens = TestUtil.parse( input );
-    CodeCleaner cleaner = new CodeCleaner( tokens );
-    cleaner.removeVariantsCode();
+    QxCodeCleaner cleaner = new QxCodeCleaner( tokens );
+    cleaner.cleanupQxCode();
     assertEquals( 0, tokens.size() );
   }
 
@@ -35,8 +35,8 @@ public class CleanupTest extends TestCase {
     String input = "if( qx.core.Variant.isSet( \"qx.aspects\", \"on\" ) ) {\n"
       + "}\n";
     TokenList tokens = TestUtil.parse( input );
-    CodeCleaner cleaner = new CodeCleaner( tokens );
-    cleaner.removeVariantsCode();
+    QxCodeCleaner cleaner = new QxCodeCleaner( tokens );
+    cleaner.cleanupQxCode();
     assertEquals( 0, tokens.size() );
   }
 
@@ -44,8 +44,8 @@ public class CleanupTest extends TestCase {
     String input = "if( qx.core.Variant.isSet( \"qx.debug\", \"on\" ) ) {\n"
                    + "}\n";
     TokenList tokens = TestUtil.parse( input );
-    CodeCleaner cleaner = new CodeCleaner( tokens );
-    cleaner.removeVariantsCode();
+    QxCodeCleaner cleaner = new QxCodeCleaner( tokens );
+    cleaner.cleanupQxCode();
     assertEquals( 0, tokens.size() );
   }
 
@@ -56,8 +56,8 @@ public class CleanupTest extends TestCase {
                    + "}\n"
                    + "b = 2;";
     TokenList tokens = TestUtil.parse( input );
-    CodeCleaner cleaner = new CodeCleaner( tokens );
-    cleaner.removeVariantsCode();
+    QxCodeCleaner cleaner = new QxCodeCleaner( tokens );
+    cleaner.cleanupQxCode();
     String result = JavaScriptPrinter.printTokens( tokens );
     assertEquals( "a = 1;\nb = 2;", result );
   }
@@ -69,8 +69,8 @@ public class CleanupTest extends TestCase {
                    + "  b = 2;\n"
                    + "}";
     TokenList tokens = TestUtil.parse( input );
-    CodeCleaner cleaner = new CodeCleaner( tokens );
-    cleaner.removeVariantsCode();
+    QxCodeCleaner cleaner = new QxCodeCleaner( tokens );
+    cleaner.cleanupQxCode();
     String result = JavaScriptPrinter.printTokens( tokens );
     assertEquals( "b = 2;", result );
   }
@@ -94,13 +94,13 @@ public class CleanupTest extends TestCase {
                       + "  }\n"
                       + "}";
     TokenList tokens = TestUtil.parse( input );
-    CodeCleaner cleaner = new CodeCleaner( tokens );
-    cleaner.removeVariantsCode();
+    QxCodeCleaner cleaner = new QxCodeCleaner( tokens );
+    cleaner.cleanupQxCode();
     String result = JavaScriptPrinter.printTokens( tokens );
     assertEquals( expected, result );
   }
 
-  public void testVariant() throws Exception {
+  public void testReplaceVariantSelection() throws Exception {
     String input = "result = qx.core.Variant.select( \"qx.debug\", {\n"
                    + "  \"on\": {\n"
                    + "    \"foo\" : 23,\n"
@@ -109,9 +109,29 @@ public class CleanupTest extends TestCase {
                    + "  \"default\" : null\n"
                    + "} )";
     TokenList tokens = TestUtil.parse( input );
-    CodeCleaner cleaner = new CodeCleaner( tokens );
-    cleaner.removeVariantsCode();
+    QxCodeCleaner cleaner = new QxCodeCleaner( tokens );
+    cleaner.cleanupQxCode();
     String result = JavaScriptPrinter.printTokens( tokens );
     assertEquals( "result = null;", result );
+  }
+
+  public void testReplaceBaseCall() throws Exception {
+    String input = "result = this.base( arguments );";
+    TokenList tokens = TestUtil.parse( input );
+    QxCodeCleaner cleaner = new QxCodeCleaner( tokens );
+    cleaner.cleanupQxCode();
+    String result = JavaScriptPrinter.printTokens( tokens );
+    String expected = "result = arguments.callee.base.call ( this );";
+    assertEquals( expected, result );
+  }
+
+  public void testReplaceBaseCallWithParameters() throws Exception {
+    String input = "result = this.base( arguments, 23, 'foo' );";
+    TokenList tokens = TestUtil.parse( input );
+    QxCodeCleaner cleaner = new QxCodeCleaner( tokens );
+    cleaner.cleanupQxCode();
+    String result = JavaScriptPrinter.printTokens( tokens );
+    String expected = "result = arguments.callee.base.call ( this, 23, \"foo\" );";
+    assertEquals( expected, result );
   }
 }

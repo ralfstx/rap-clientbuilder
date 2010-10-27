@@ -11,39 +11,45 @@ package org.eclipse.rap.clientbuilder;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.List;
 
 import org.eclipse.rap.clientbuilder.TokenList.TokenMatcher;
+import org.mozilla.javascript.Token;
 
-public class CodeCleaner {
+import com.yahoo.platform.yui.compressor.JavaScriptToken;
+
+public class QxCodeCleaner {
 
   private final TokenList tokens;
 
-  private final Set tokensToRemove;
+  private final List replacements;
 
-  public CodeCleaner( TokenList tokens ) {
+  public QxCodeCleaner( TokenList tokens ) {
     this.tokens = tokens;
-    tokensToRemove = new HashSet();
+    replacements = new ArrayList();
   }
 
-  public void removeVariantsCode() {
+  public void cleanupQxCode() {
     int pos = 0;
     while( pos < tokens.size() ) {
-      int nextPos = removeConditional( pos );
+      int nextPos = removeVariantConditional( pos );
       if( nextPos == pos ) {
-        nextPos = replaceSelection( pos );
+        nextPos = replaceVariantSelection( pos );
+      }
+      if( nextPos == pos ) {
+        nextPos = replaceBaseCall( pos );
       }
       if( nextPos == pos ) {
         nextPos++;
       }
       pos = nextPos;
     }
-    removeMarkedTokens();
+    doReplacements();
   }
 
-  private int removeConditional( int offset ) {
+  private int removeVariantConditional( int offset ) {
     int nextPos = offset;
     VariantConditional conditional = readVariantConditional( offset );
     if( conditional != null ) {
@@ -70,7 +76,7 @@ public class CodeCleaner {
     return nextPos;
   }
 
-  private int replaceSelection( int offset ) {
+  private int replaceVariantSelection( int offset ) {
     int nextPos = offset;
     VariantSelection selection = readVariantSelection( offset );
     if( selection != null ) {
@@ -97,20 +103,54 @@ public class CodeCleaner {
     return nextPos;
   }
 
-  private int markTokensForRemoval( int first, int last ) {
-    for( int i = first; i <= last; i++ ) {
-      tokensToRemove.add( new Integer( i ) );
+  private int replaceBaseCall( int offset ) {
+    int nextPos = offset;
+    Range baseCall = readBaseCall( offset );
+    if( baseCall != null ) {
+      JavaScriptToken[] replacement = new JavaScriptToken[] {
+        new JavaScriptToken( Token.NAME, "arguments" ),
+        new JavaScriptToken( Token.DOT, "." ),
+        new JavaScriptToken( Token.NAME, "callee" ),
+        new JavaScriptToken( Token.DOT, "." ),
+        new JavaScriptToken( Token.NAME, "base" ),
+        new JavaScriptToken( Token.DOT, "." ),
+        new JavaScriptToken( Token.NAME, "call" ),
+        new JavaScriptToken( Token.LP, "(" ),
+        new JavaScriptToken( Token.NAME, "this" )
+      };
+      markRangeForReplacement( baseCall, replacement );
+      nextPos = baseCall.end + 1;
     }
+    return nextPos;
+  }
+
+  private int markTokensForRemoval( int first, int last ) {
+    replacements.add( new Replacement( first, last, null ) );
     return last - first + 1;
   }
 
-  private void removeMarkedTokens() {
-    ArrayList removeList = new ArrayList( tokensToRemove );
-    Collections.sort( removeList );
-    Collections.reverse( removeList );
-    for( Iterator iterator = removeList.iterator(); iterator.hasNext(); ) {
-      Integer index = ( Integer )iterator.next();
-      tokens.removeToken( index.intValue() );
+  private void markRangeForReplacement( Range range,
+                                        JavaScriptToken[] replacementTokens )
+  {
+    replacements.add( new Replacement( range.begin,
+                                       range.end,
+                                       replacementTokens ) );
+  }
+
+  private void doReplacements() {
+    Collections.sort( replacements, new Comparator() {
+      
+      public int compare( Object o1, Object o2 ) {
+        Replacement repl1 = ( Replacement )o1;
+        Replacement repl2 = ( Replacement )o2;
+        return repl1.end < repl2.end ? 1 : repl1.end == repl2.end ? 0 : -1;
+      }
+    } );
+    for( Iterator iterator = replacements.iterator(); iterator.hasNext(); ) {
+      Replacement replacement = ( Replacement )iterator.next();
+      tokens.replaceTokens( replacement.begin,
+                            replacement.end,
+                            replacement.replacement );
     }
   }
 
@@ -168,6 +208,22 @@ public class CodeCleaner {
     return result;
   }
 
+  Range readBaseCall( int offset ) {
+    Range result = null;
+    int pos = offset;
+    boolean matched = true;
+    TokenMatcher nameMatcher = TokenMatcher.name( "arguments" );
+    matched &= TokenMatcher.literal( Token.THIS ).matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.DOT.matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.name( "base" ).matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.LEFT_PAREN.matches( tokens.getToken( pos++ ) );
+    matched &= nameMatcher.matches( tokens.getToken( pos++ ) );
+    if( matched ) {
+      result = new Range( offset, pos - 1 );
+    }
+    return result;
+  }
+
   public static class Range {
     public final int begin;
     public final int end;
@@ -175,6 +231,16 @@ public class CodeCleaner {
     public Range( int begin, int end ) {
       this.begin = begin;
       this.end = end;
+    }
+  }
+
+  public static class Replacement extends Range {
+
+    public final JavaScriptToken[] replacement;
+
+    public Replacement( int begin, int end, JavaScriptToken[] replacement ) {
+      super( begin, end );
+      this.replacement = replacement;
     }
   }
 

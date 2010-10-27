@@ -62,8 +62,8 @@ public class JSFile {
     StringWriter stringWriter = new StringWriter();
     String fileName = file.getName();
     debugFileWriter.beforeCleanup( tokens, fileName );
-    CodeCleaner codeCleaner = new CodeCleaner( tokens );
-    codeCleaner.removeVariantsCode();
+    QxCodeCleaner codeCleaner = new QxCodeCleaner( tokens );
+    codeCleaner.cleanupQxCode();
     debugFileWriter.afterCleanup( tokens, fileName );
     compressor.compress( stringWriter,
                          -1,
