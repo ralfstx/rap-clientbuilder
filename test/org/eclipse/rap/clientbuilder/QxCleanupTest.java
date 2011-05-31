@@ -1,20 +1,22 @@
 /*******************************************************************************
- * Copyright (c) 2010 EclipseSource and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2010, 2011 EclipseSource and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   EclipseSource - initial API and implementation
+ *    EclipseSource - initial API and implementation
  ******************************************************************************/
 package org.eclipse.rap.clientbuilder;
 
 import junit.framework.TestCase;
 
+
 public class QxCleanupTest extends TestCase {
 
   public void testRemoveEmptyDebugVariantConditional() throws Exception {
-    String input = "if( qx.core.Variant.isSet( \"qx.debug\", \"on\" ) ) {\n"
+    String input =   "if( qx.core.Variant.isSet( \"qx.debug\", \"on\" ) ) {\n"
                    + "}\n";
     TokenList tokens = TestUtil.parse( input );
     QxCodeCleaner cleaner = new QxCodeCleaner( tokens );
@@ -23,7 +25,7 @@ public class QxCleanupTest extends TestCase {
   }
 
   public void testRemoveCompatVariantConditional() throws Exception {
-    String input = "if( qx.core.Variant.isSet( \"qx.compatibility\", \"on\" ) ) {\n"
+    String input =   "if( qx.core.Variant.isSet( \"qx.compatibility\", \"on\" ) ) {\n"
                    + "}\n";
     TokenList tokens = TestUtil.parse( input );
     QxCodeCleaner cleaner = new QxCodeCleaner( tokens );
@@ -32,8 +34,8 @@ public class QxCleanupTest extends TestCase {
   }
 
   public void testRemoveAspectVariantConditional() throws Exception {
-    String input = "if( qx.core.Variant.isSet( \"qx.aspects\", \"on\" ) ) {\n"
-      + "}\n";
+    String input =   "if( qx.core.Variant.isSet( \"qx.aspects\", \"on\" ) ) {\n"
+                   + "}\n";
     TokenList tokens = TestUtil.parse( input );
     QxCodeCleaner cleaner = new QxCodeCleaner( tokens );
     cleaner.cleanupQxCode();
@@ -41,7 +43,7 @@ public class QxCleanupTest extends TestCase {
   }
 
   public void testRemoveMultipleVariantConditionals() throws Exception {
-    String input = "if( qx.core.Variant.isSet( \"qx.debug\", \"on\" ) ) {\n"
+    String input =   "if( qx.core.Variant.isSet( \"qx.debug\", \"on\" ) ) {\n"
                    + "}\n";
     TokenList tokens = TestUtil.parse( input );
     QxCodeCleaner cleaner = new QxCodeCleaner( tokens );
@@ -50,7 +52,7 @@ public class QxCleanupTest extends TestCase {
   }
 
   public void testRemoveVariantConditionalBetweenStatements() throws Exception {
-    String input = "a = 1;\n"
+    String input =   "a = 1;\n"
                    + "if( qx.core.Variant.isSet( \"qx.debug\", \"on\" ) ) {\n"
                    + "  if( false ) { throw \"ERROR\" }\n"
                    + "}\n"
@@ -63,7 +65,7 @@ public class QxCleanupTest extends TestCase {
   }
 
   public void testRemoveVariantConditionalWithElseBlock() throws Exception {
-    String input = "if( qx.core.Variant.isSet( \"qx.debug\", \"on\" ) ) {\n"
+    String input =   "if( qx.core.Variant.isSet( \"qx.debug\", \"on\" ) ) {\n"
                    + "  a = 1;\n"
                    + "}\n else {\n"
                    + "  b = 2;\n"
@@ -86,7 +88,7 @@ public class QxCleanupTest extends TestCase {
                    + "    }\n"
                    + "  }\n"
                    + "}\n";
-    String expected = "if ( vObject && vObject.__disposed === false ) {\n"
+    String expected =   "if ( vObject && vObject.__disposed === false ) {\n"
                       + "  try {\n"
                       + "    vObject.dispose ( );\n"
                       + "  }\n"
@@ -101,7 +103,7 @@ public class QxCleanupTest extends TestCase {
   }
 
   public void testReplaceVariantSelection() throws Exception {
-    String input = "result = qx.core.Variant.select( \"qx.debug\", {\n"
+    String input =   "result = qx.core.Variant.select( \"qx.debug\", {\n"
                    + "  \"on\": {\n"
                    + "    \"foo\" : 23,\n"
                    + "    \"bar\" : 42\n"

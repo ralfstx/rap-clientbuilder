@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+@SuppressWarnings( { "unchecked", "rawtypes"} )
 class ScriptOrFnScope {
 
     private int braceNesting;

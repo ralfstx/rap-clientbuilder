@@ -1,11 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2010 EclipseSource and others. All rights reserved.
+ * Copyright (c) 2010, 2011 EclipseSource and others. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   EclipseSource - initial API and implementation
+ *    EclipseSource - initial API and implementation
  ******************************************************************************/
 package org.eclipse.rap.clientbuilder;
 
@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.swt.internal.widgets.displaykit.JsFilesList;
+
 
 public class JsCompressor {
   private static final String JS_SOURCE_DIR = "js";

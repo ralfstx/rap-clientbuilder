@@ -18,7 +18,7 @@ public final class JsFilesList {
   public static String[] getFiles()
     throws SecurityException, NoSuchFieldException, IllegalAccessException
   {
-    Class clazz = ClientResources.class;
+    Class<?> clazz = ClientResources.class;
     Field field = clazz.getDeclaredField( "JAVASCRIPT_FILES" );
     field.setAccessible( true );
     String[] files = ( String[] )field.get( null );

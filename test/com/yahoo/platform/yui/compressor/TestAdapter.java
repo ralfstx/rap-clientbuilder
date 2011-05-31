@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.mozilla.javascript.EvaluatorException;
 
@@ -21,12 +22,13 @@ import org.mozilla.javascript.EvaluatorException;
  */
 public final class TestAdapter {
 
-  public static ArrayList parseString( String input )
+  public static List<JavaScriptToken> parseString( String input )
     throws EvaluatorException, IOException
   {
     Reader inputReader = new StringReader( input );
     TestErrorReporter reporter = new TestErrorReporter();
-    ArrayList tokens = JavaScriptCompressor.parse( inputReader, reporter );
+    @SuppressWarnings( "unchecked" )
+    ArrayList<JavaScriptToken> tokens = JavaScriptCompressor.parse( inputReader, reporter );
     return tokens;
   }
 

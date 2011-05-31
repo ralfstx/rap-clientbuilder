@@ -1,11 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2010 EclipseSource and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2010, 2011 EclipseSource and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   EclipseSource - initial API and implementation
+ *    EclipseSource - initial API and implementation
  ******************************************************************************/
 package org.eclipse.rap.clientbuilder;
 
@@ -13,15 +14,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 
 import org.mozilla.javascript.Token;
 
 import com.yahoo.platform.yui.compressor.JavaScriptToken;
 
+
 public final class StringReplacer {
 
-  private HashMap stringMap = new HashMap();
-  private ArrayList strings;
+  private HashMap<String, Integer> stringMap = new HashMap<String, Integer>();
+  private List<String> strings;
 
   public void discoverStrings( TokenList tokens ) {
     if( strings != null ) {
@@ -31,7 +34,7 @@ public final class StringReplacer {
     for( int pos = 0; pos < length; pos++ ) {
       if( isReplacableString( tokens, pos ) ) {
         String value = tokens.getToken( pos ).getValue();
-        Integer count = ( Integer )stringMap.get( value );
+        Integer count = stringMap.get( value );
         if( count == null ) {
           stringMap.put( value, new Integer( 1 ) );
         } else {
@@ -59,7 +62,7 @@ public final class StringReplacer {
   public void optimize() {
     ensureStringListCreated();
     for( int i = strings.size() - 1; i >= 0; i-- ) {
-      String string = ( String )strings.get( i );
+      String string = strings.get( i );
       if( !isWorthReplacing( string ) ) {
         strings.remove( i );
       }
@@ -79,7 +82,7 @@ public final class StringReplacer {
   }
 
   private int getFrequency( String string ) {
-    Integer frequency = ( Integer )stringMap.get( string );
+    Integer frequency = stringMap.get( string );
     return frequency == null ? 0 : frequency.intValue();
   }
 
@@ -89,12 +92,12 @@ public final class StringReplacer {
 
   private void ensureStringListCreated() {
     if( strings == null ) {
-      strings = new ArrayList( stringMap.keySet() );
-      Comparator comparator = new Comparator() {
+      strings = new ArrayList<String>( stringMap.keySet() );
+      Comparator<String> comparator = new Comparator<String>() {
       
-        public int compare( Object o1, Object o2 ) {
-          int freq1 = getFrequency( ( String )o1 );
-          int freq2 = getFrequency( ( String )o2 );
+        public int compare( String string1, String string2 ) {
+          int freq1 = getFrequency( string1 );
+          int freq2 = getFrequency( string2 );
           return freq1 < freq2 ? 1 : ( freq1 == freq2 ? 0 : -1 );
         }
       };

@@ -1,11 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2010 EclipseSource and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2010, 2011 EclipseSource and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   EclipseSource - initial API and implementation
+ *    EclipseSource - initial API and implementation
  ******************************************************************************/
 package org.eclipse.rap.clientbuilder;
 
@@ -15,11 +16,12 @@ import org.mozilla.javascript.Token;
 
 import com.yahoo.platform.yui.compressor.JavaScriptToken;
 
+
 public class TokenList {
 
-  private final List tokens;
+  private final List<JavaScriptToken> tokens;
 
-  public TokenList( List tokens ) {
+  public TokenList( List<JavaScriptToken> tokens ) {
     this.tokens = tokens;
   }
 
@@ -30,7 +32,7 @@ public class TokenList {
   public JavaScriptToken getToken( int index ) {
     JavaScriptToken token = null;
     if( index >= 0 && index < tokens.size() ) {
-      token = ( JavaScriptToken )tokens.get( index );
+      token = tokens.get( index );
     }
     return token;
   }
@@ -43,8 +45,7 @@ public class TokenList {
     replaceTokens( index, index, replacement );
   }
 
-  public void replaceTokens( int begin, int end, JavaScriptToken[] replacement )
-  {
+  public void replaceTokens( int begin, int end, JavaScriptToken[] replacement ) {
     if( begin >= 0 && begin <= end && end < tokens.size() ) {
       for( int i = begin; i <= end; i++ ) {
         tokens.remove( begin );
@@ -60,20 +61,18 @@ public class TokenList {
   public int readExpression( int offset ) {
     int result = -1;
     JavaScriptToken token = getToken( offset );
-    if( TokenMatcher.LEFT_BRACE.matches( token )
-        || TokenMatcher.LEFT_BRACKET.matches( token ) )
-    {
+    if( TokenMatcher.LEFT_BRACE.matches( token ) || TokenMatcher.LEFT_BRACKET.matches( token ) ) {
       result = findClosing( offset );
     }
     int pos = offset;
     while( pos >= 0 && pos < size() && result == -1 ) {
       token = getToken( pos );
-      if( TokenMatcher.LEFT_BRACE.matches( token )
+      if(    TokenMatcher.LEFT_BRACE.matches( token )
           || TokenMatcher.LEFT_BRACKET.matches( token )
           || TokenMatcher.LEFT_PAREN.matches( token ) )
       {
         pos = findClosing( pos ) + 1;
-      } else if( TokenMatcher.RIGHT_BRACE.matches( token )
+      } else if(    TokenMatcher.RIGHT_BRACE.matches( token )
                  || TokenMatcher.RIGHT_BRACKET.matches( token )
                  || TokenMatcher.RIGHT_PAREN.matches( token )
                  || TokenMatcher.COMMA.matches( token )
@@ -105,8 +104,7 @@ public class TokenList {
       leftMatcher = TokenMatcher.LEFT_PAREN;
       rightMatcher = TokenMatcher.RIGHT_PAREN;
     } else {
-      String message = "Not an opening brace, bracket or parenthesis at pos "
-        + offset;
+      String message = "Not an opening brace, bracket or parenthesis at pos " + offset;
       throw new IllegalArgumentException( message );
     }
     int level = 0;
@@ -128,23 +126,20 @@ public class TokenList {
 
   public int findInObjectLiteral( String key, int offset ) {
     if( !TokenMatcher.LEFT_BRACE.matches( getToken( offset ) ) ) {
-      throw new IllegalArgumentException( "Not an object literal at pos "
-                                          + offset );
+      throw new IllegalArgumentException( "Not an object literal at pos " + offset );
     }
     int result = -1;
     int closingBrace = findClosing( offset );
     if( closingBrace == -1 ) {
-      throw new IllegalArgumentException( "No closing brace found for pos "
-                                          + offset );
+      throw new IllegalArgumentException( "No closing brace found for pos " + offset );
     }
     int pos = offset + 1;
     TokenMatcher keyStringMatcher = TokenMatcher.string();
     TokenMatcher keyNameMatcher = TokenMatcher.name();
     while( pos < closingBrace - 2 ) {
       JavaScriptToken token = getToken( pos );
-      if( keyStringMatcher.matches( token ) || keyNameMatcher.matches( token ) )
-      {
-        if( key.equals( keyStringMatcher.matchedValue )
+      if( keyStringMatcher.matches( token ) || keyNameMatcher.matches( token ) ) {
+        if(    key.equals( keyStringMatcher.matchedValue )
             || key.equals( keyNameMatcher.matchedValue )
             || "default".equals( keyStringMatcher.matchedValue )
             || "default".equals( keyNameMatcher.matchedValue ) )

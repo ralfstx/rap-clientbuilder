@@ -37,6 +37,7 @@ public class JSFile {
   private final JavaScriptCompressor compressor;
   private final TokenList tokens;
 
+  @SuppressWarnings( "unchecked" )
   public JSFile( File file ) throws IOException {
     this.file = file;
     InputStream inputStream = new FileInputStream( file );

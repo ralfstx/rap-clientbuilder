@@ -1,11 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2010 EclipseSource and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2010, 2011 EclipseSource and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   EclipseSource - initial API and implementation
+ *    EclipseSource - initial API and implementation
  ******************************************************************************/
 package org.eclipse.rap.clientbuilder;
 
@@ -13,7 +14,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.mozilla.javascript.Token;
 
@@ -22,18 +23,18 @@ import com.yahoo.platform.yui.compressor.JavaScriptToken;
 import com.yahoo.platform.yui.compressor.TestAdapter;
 import com.yahoo.platform.yui.compressor.TestErrorReporter;
 
+
 public class TestUtil {
 
   public static TokenList parse( String input ) throws IOException {
-    ArrayList tokens = TestAdapter.parseString( input );
+    List<JavaScriptToken> tokens = TestAdapter.parseString( input );
     return new TokenList( tokens );
   }
 
   public static String compress( String input ) throws IOException {
     Reader inputReader = new StringReader( input );
     TestErrorReporter errorReporter = new TestErrorReporter();
-    JavaScriptCompressor compressor = new JavaScriptCompressor( inputReader,
-                                                                errorReporter );
+    JavaScriptCompressor compressor = new JavaScriptCompressor( inputReader, errorReporter );
     StringWriter outputWriter = new StringWriter();
     compressor.compress( outputWriter, -1, true, false, false, false );
     return outputWriter.toString();

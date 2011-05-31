@@ -1,11 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2010 EclipseSource and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2010, 2011 EclipseSource and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   EclipseSource - initial API and implementation
+ *    EclipseSource - initial API and implementation
  ******************************************************************************/
 package org.eclipse.rap.clientbuilder;
 
@@ -20,15 +21,16 @@ import org.mozilla.javascript.Token;
 
 import com.yahoo.platform.yui.compressor.JavaScriptToken;
 
+
 public class QxCodeCleaner {
 
   private final TokenList tokens;
 
-  private final List replacements;
+  private final List<Replacement> replacements;
 
   public QxCodeCleaner( TokenList tokens ) {
     this.tokens = tokens;
-    replacements = new ArrayList();
+    replacements = new ArrayList<Replacement>();
   }
 
   public void cleanupQxCode() {
@@ -138,19 +140,14 @@ public class QxCodeCleaner {
   }
 
   private void doReplacements() {
-    Collections.sort( replacements, new Comparator() {
-      
-      public int compare( Object o1, Object o2 ) {
-        Replacement repl1 = ( Replacement )o1;
-        Replacement repl2 = ( Replacement )o2;
+    Collections.sort( replacements, new Comparator<Replacement>() {
+      public int compare( Replacement repl1, Replacement repl2 ) {
         return repl1.end < repl2.end ? 1 : repl1.end == repl2.end ? 0 : -1;
       }
     } );
-    for( Iterator iterator = replacements.iterator(); iterator.hasNext(); ) {
-      Replacement replacement = ( Replacement )iterator.next();
-      tokens.replaceTokens( replacement.begin,
-                            replacement.end,
-                            replacement.replacement );
+    for( Iterator<Replacement> iterator = replacements.iterator(); iterator.hasNext(); ) {
+      Replacement replacement = iterator.next();
+      tokens.replaceTokens( replacement.begin, replacement.end, replacement.replacement );
     }
   }
 
@@ -227,7 +224,7 @@ public class QxCodeCleaner {
   public static class Range {
     public final int begin;
     public final int end;
-    
+
     public Range( int begin, int end ) {
       this.begin = begin;
       this.end = end;
@@ -245,8 +242,9 @@ public class QxCodeCleaner {
   }
 
   static class VariantConditional extends Range {
+
     public final String variant;
-    
+
     public VariantConditional( int begin, int end, String variant ) {
       super( begin, end );
       this.variant = variant;
@@ -254,8 +252,9 @@ public class QxCodeCleaner {
   }
 
   static class VariantSelection extends Range {
+
     public final String variant;
-    
+
     public VariantSelection( int begin, int end, String variant ) {
       super( begin, end );
       this.variant = variant;
