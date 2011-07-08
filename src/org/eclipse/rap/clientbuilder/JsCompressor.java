@@ -24,7 +24,7 @@ public class JsCompressor {
 
   public static void main( String[] args ) {
     if( args.length < 1 ) {
-      String message = "Parameter missing (rwt.q07 project directory)";
+      String message = "Parameter missing (rwt project directory)";
       throw new IllegalArgumentException( message );
     }
     File projectDir = new File( args[ 0 ] );
@@ -109,7 +109,7 @@ public class JsCompressor {
         inputFiles[ i ] = new JSFile( file );
       }
     } catch( Exception e ) {
-      String message = "Failed to get JS files list from rwt.q07 project";
+      String message = "Failed to get JS files list from rwt project";
       throw new RuntimeException( message, e );
     }
     return inputFiles;
