@@ -15,6 +15,10 @@ import java.lang.reflect.Field;
 
 public final class JsFilesList {
 
+  private JsFilesList() {
+    // prevent instantiation
+  }
+
   public static String[] getFiles()
     throws SecurityException, NoSuchFieldException, IllegalAccessException
   {
