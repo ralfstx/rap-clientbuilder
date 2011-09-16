@@ -1,5 +1,5 @@
-Experimental client library builder for RWT
-===========================================
+Client library builder for RWT
+==============================
 
 Summary
 -------
