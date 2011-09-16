@@ -1,8 +1,6 @@
 Client library builder for RWT
 ==============================
 
-Summary
--------
 The JsCompressor is used for creating the client library for RAP [1].  It
 reads JavaScript files from the project org.eclipse.rap.rwt, compresses and
 concatenates them, and writes the resulting JavaScript file back into the
