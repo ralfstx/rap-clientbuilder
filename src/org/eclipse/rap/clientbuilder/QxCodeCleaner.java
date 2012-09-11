@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2011 EclipseSource and others.
+ * Copyright (c) 2010, 2012 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -164,9 +164,9 @@ public class QxCodeCleaner {
     TokenMatcher nameMatcher = TokenMatcher.string();
     matched &= TokenMatcher.IF.matches( tokens.getToken( pos++ ) );
     matched &= TokenMatcher.LEFT_PAREN.matches( tokens.getToken( pos++ ) );
-    matched &= TokenMatcher.name( "qx" ).matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.name( "rwt" ).matches( tokens.getToken( pos++ ) );
     matched &= TokenMatcher.DOT.matches( tokens.getToken( pos++ ) );
-    matched &= TokenMatcher.name( "core" ).matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.name( "util" ).matches( tokens.getToken( pos++ ) );
     matched &= TokenMatcher.DOT.matches( tokens.getToken( pos++ ) );
     matched &= TokenMatcher.name( "Variant" ).matches( tokens.getToken( pos++ ) );
     matched &= TokenMatcher.DOT.matches( tokens.getToken( pos++ ) );
@@ -188,9 +188,9 @@ public class QxCodeCleaner {
     int pos = offset;
     boolean matched = true;
     TokenMatcher nameMatcher = TokenMatcher.string();
-    matched &= TokenMatcher.name( "qx" ).matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.name( "rwt" ).matches( tokens.getToken( pos++ ) );
     matched &= TokenMatcher.DOT.matches( tokens.getToken( pos++ ) );
-    matched &= TokenMatcher.name( "core" ).matches( tokens.getToken( pos++ ) );
+    matched &= TokenMatcher.name( "util" ).matches( tokens.getToken( pos++ ) );
     matched &= TokenMatcher.DOT.matches( tokens.getToken( pos++ ) );
     matched &= TokenMatcher.name( "Variant" ).matches( tokens.getToken( pos++ ) );
     matched &= TokenMatcher.DOT.matches( tokens.getToken( pos++ ) );

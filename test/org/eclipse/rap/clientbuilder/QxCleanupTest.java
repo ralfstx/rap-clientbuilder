@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2011 EclipseSource and others.
+ * Copyright (c) 2010, 2012 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,7 @@ import junit.framework.TestCase;
 public class QxCleanupTest extends TestCase {
 
   public void testRemoveEmptyDebugVariantConditional() throws Exception {
-    String input =   "if( qx.core.Variant.isSet( \"qx.debug\", \"on\" ) ) {\n"
+    String input =   "if( rwt.util.Variant.isSet( \"qx.debug\", \"on\" ) ) {\n"
                    + "}\n";
     TokenList tokens = TestUtil.parse( input );
     QxCodeCleaner cleaner = new QxCodeCleaner( tokens );
@@ -25,7 +25,7 @@ public class QxCleanupTest extends TestCase {
   }
 
   public void testRemoveCompatVariantConditional() throws Exception {
-    String input =   "if( qx.core.Variant.isSet( \"qx.compatibility\", \"on\" ) ) {\n"
+    String input =   "if( rwt.util.Variant.isSet( \"qx.compatibility\", \"on\" ) ) {\n"
                    + "}\n";
     TokenList tokens = TestUtil.parse( input );
     QxCodeCleaner cleaner = new QxCodeCleaner( tokens );
@@ -34,7 +34,7 @@ public class QxCleanupTest extends TestCase {
   }
 
   public void testRemoveAspectVariantConditional() throws Exception {
-    String input =   "if( qx.core.Variant.isSet( \"qx.aspects\", \"on\" ) ) {\n"
+    String input =   "if( rwt.util.Variant.isSet( \"qx.aspects\", \"on\" ) ) {\n"
                    + "}\n";
     TokenList tokens = TestUtil.parse( input );
     QxCodeCleaner cleaner = new QxCodeCleaner( tokens );
@@ -43,7 +43,7 @@ public class QxCleanupTest extends TestCase {
   }
 
   public void testRemoveMultipleVariantConditionals() throws Exception {
-    String input =   "if( qx.core.Variant.isSet( \"qx.debug\", \"on\" ) ) {\n"
+    String input =   "if( rwt.util.Variant.isSet( \"qx.debug\", \"on\" ) ) {\n"
                    + "}\n";
     TokenList tokens = TestUtil.parse( input );
     QxCodeCleaner cleaner = new QxCodeCleaner( tokens );
@@ -53,7 +53,7 @@ public class QxCleanupTest extends TestCase {
 
   public void testRemoveVariantConditionalBetweenStatements() throws Exception {
     String input =   "a = 1;\n"
-                   + "if( qx.core.Variant.isSet( \"qx.debug\", \"on\" ) ) {\n"
+                   + "if( rwt.util.Variant.isSet( \"qx.debug\", \"on\" ) ) {\n"
                    + "  if( false ) { throw \"ERROR\" }\n"
                    + "}\n"
                    + "b = 2;";
@@ -65,7 +65,7 @@ public class QxCleanupTest extends TestCase {
   }
 
   public void testRemoveVariantConditionalWithElseBlock() throws Exception {
-    String input =   "if( qx.core.Variant.isSet( \"qx.debug\", \"on\" ) ) {\n"
+    String input =   "if( rwt.util.Variant.isSet( \"qx.debug\", \"on\" ) ) {\n"
                    + "  a = 1;\n"
                    + "}\n else {\n"
                    + "  b = 2;\n"
@@ -83,7 +83,7 @@ public class QxCleanupTest extends TestCase {
                    + "    vObject.dispose();\n"
                    + "  }\n"
                    + "  catch( ex ) {\n"
-                   + "    if( qx.core.Variant.isSet( \"qx.debug\", \"on\" ) ) {\n"
+                   + "    if( rwt.util.Variant.isSet( \"qx.debug\", \"on\" ) ) {\n"
                    + "      qx.core.Log.warn( \"Could not dispose: \" + vObject + \":\", ex );\n"
                    + "    }\n"
                    + "  }\n"
@@ -103,7 +103,7 @@ public class QxCleanupTest extends TestCase {
   }
 
   public void testReplaceVariantSelection() throws Exception {
-    String input =   "result = qx.core.Variant.select( \"qx.debug\", {\n"
+    String input =   "result = rwt.util.Variant.select( \"qx.debug\", {\n"
                    + "  \"on\": {\n"
                    + "    \"foo\" : 23,\n"
                    + "    \"bar\" : 42\n"
