@@ -1,21 +1,14 @@
-Client library builder for RWT
-==============================
+Client library builder for RWT WebClient
+========================================
 
-The JsCompressor is used for creating the client library for RAP [1].  It
-reads JavaScript files from the project org.eclipse.rap.rwt, compresses and
-concatenates them, and writes the resulting JavaScript file back into the
-project as client.js.  The list of files to be included is taken from the
-class QooxdooResourcesUtil.
+The JsCompressor is used for assembling the JavaScript library for the WebClient.
+It reads JavaScript files from the project org.eclipse.rap.rwt, compresses and
+concatenates them, and writes the resulting JavaScript file back into the project
+as client.js.
 
-Usage
------
-Place this project into the same workspace as the org.eclipse.rap.rwt
-project.  Use the included launch configuration JSCompressor.launch to create
-a new client.js. This launch configuration calls JsCompressor as a plain
-application, passing the root directory of the rwt project as parameter.
-Remember to refresh (F5) the rwt project when the compressor is done.
+As of RAP 2.1, this project has been moved into the [RAP repository](http://git.eclipse.org/c/rap/org.eclipse.rap.git/tree/releng).
 
-_Important:_ For RAP 1.4, checkout the 1.4-maintenance branch.
+For earlier versions, please check out the releated branch.
 
 Requires
 --------
